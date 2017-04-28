@@ -5,6 +5,7 @@
 # project name (generate executable with this name)
 TARGET   = nbody
 
+#  ---- CHANGE THIS TO THE PATH OF THE SYSTEMS GCC-6 COMPILER! ----
 PATH_TO_GCC6 = /usr/local/bin/gcc-6
 
 # C compiler and flags
