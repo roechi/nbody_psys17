@@ -12,6 +12,10 @@ PATH_TO_GCC6 = /usr/local/bin/gcc-6
 CC       = $(PATH_TO_GCC6)
 CFLAGS   = -std=c99 -Wall -I. -fopenmp -ggdb
 
+# C++ compiler and flags
+CPP 		= g++
+CXXFLAGS	= -std=c++11
+
 # Linker and flags
 LINKER   = $(PATH_TO_GCC6)
 LFLAGS   = -Wall -I. -lm -fopenmp
