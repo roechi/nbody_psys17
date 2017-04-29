@@ -10,7 +10,7 @@ PATH_TO_GCC6 = /usr/local/bin/gcc-6
 
 # C compiler and flags
 CC       = $(PATH_TO_GCC6)
-CFLAGS   = -std=c99 -Wall -I. -fopenmp
+CFLAGS   = -std=c99 -Wall -I. -fopenmp -ggdb
 
 # Linker and flags
 LINKER   = $(PATH_TO_GCC6)
@@ -27,12 +27,11 @@ INCLUDES := $(wildcard $(SRCDIR)/*.h)
 OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 rm       = rm -f
 
-
 $(BINDIR)/$(TARGET): $(OBJECTS)
 	@$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
 	@echo "Linking complete!"
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
