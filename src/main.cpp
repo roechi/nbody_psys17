@@ -1,13 +1,9 @@
-/**
- * @file nbody.c
- *
- * This is the main driver of the program, i.e.,
- * the program, which is then used by the user.
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
 #include <string.h>
+#include "Body.h"
+#include <utility>
 
 int main(int argc, char **argv)
 {

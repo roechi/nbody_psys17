@@ -9,14 +9,16 @@
 #define SRC_BODY_H_
 #include <utility>
 
+typedef std::pair<double,double> tuple;
+
 class Body {
 	double m;
-	std::pair<double,double> pos;
-	std::pair<double,double> vel;
+	tuple pos;
+	tuple vel;
 
 public:
 	Body(double m, std::pair<double,double> pos, std::pair<double,double> vel);
-	virtual ~Body();
+	void print();
 };
 
 #endif /* SRC_BODY_H_ */

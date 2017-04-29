@@ -4,17 +4,19 @@
 
 # project name (generate executable with this name)
 TARGET   = nbody
+.DEFAULT_GOAL := bin/nbody
 
 #  ---- CHANGE THIS TO THE PATH OF THE SYSTEMS GCC-6 COMPILER! ----
 PATH_TO_GCC6 = /usr/local/bin/gcc-6
+PATH_TO_G++  = /usr/local/bin/g++-6
 
 # C compiler and flags
 CC       = $(PATH_TO_GCC6)
 CFLAGS   = -std=c99 -Wall -I. -fopenmp -ggdb
 
 # C++ compiler and flags
-CPP 		= g++
-CXXFLAGS	= -std=c++11
+CPP 		= $(PATH_TO_G++) 
+CXXFLAGS	= -std=c++11 -fopenmp
 
 # Linker and flags
 LINKER   = $(PATH_TO_GCC6)
@@ -26,18 +28,18 @@ SRCDIR   = src
 OBJDIR   = obj
 BINDIR   = bin
 
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
+SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
 INCLUDES := $(wildcard $(SRCDIR)/*.h)
-OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 rm       = rm -f
 
-$(BINDIR)/$(TARGET): $(OBJECTS)
-	@$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
-	@echo "Linking complete!"
-
-$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	@$(CPP) $(CXXFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
+
+$(BINDIR)/$(TARGET): $(OBJECTS)
+	@$(CPP) $(OBJECTS) $(LFLAGS) -o $@
+	@echo "Linking complete!"
 
 .PHONY: clean
 clean:
