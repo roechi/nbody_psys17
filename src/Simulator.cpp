@@ -22,9 +22,10 @@ void Simulator::loop() {
 
 	for (int step = 0; step < Simulator::SIMULATION_STEPS; step++){
 	    for(int i=0; i<Simulator::NUM_BODIES; i++) {
-	    	double x = this->bodies[i].rx * 250 / 1e18;
-	    	double y = this->bodies[i].ry * 250 / 1e18;
-	    	printf("%f\t%f\t", x, y);
+	    	double x = this->bodies[i].rx * 250 / RADIUS_UNIVERSE;
+	    	double y = this->bodies[i].ry * 250 / RADIUS_UNIVERSE;
+	    	double mass = this->bodies[i].m;
+	    	printf("%f\t%f\t%f\t", x, y, mass);
 	    }
 	    printf("\n");
 	    addForces();
@@ -33,31 +34,30 @@ void Simulator::loop() {
 }
 
 void Simulator::generateBodies() {
-    double radius = 1e18;
-    double solarmass=1.98892e30;
-    for (int i = 0; i < Simulator::NUM_BODIES; i++) {
-      double px = 1e18*exp(-1.8)*(0.5-getRandom());
-      double py = 1e18*exp(-1.8)*(0.5-getRandom());
-      double magv = circlev(px, py);
+    //Put the central mass in
+    this->bodies[0] = Body(1e6*SOLAR_MASS, 0, 0, 0,0);//put a heavy body in the center
 
-      double absangle = atan(abs(py/px));
-      double thetav= M_PI/2-absangle;
-      double phiv = getRandom()*M_PI;
-      double vx   = -1*signum(py)*cos(thetav)*magv;
-      double vy   = signum(px)*sin(thetav)*magv;
+	for (int i = 1; i < NUM_BODIES; i++) {
+	  double px = RADIUS_UNIVERSE*exp(-1.8)*(0.5-getRandom());
+	  double py = RADIUS_UNIVERSE*exp(-1.8)*(0.5-getRandom());
+
+	  double magv = circlev(px, py);
+
+	  double absangle = atan(abs(py/px));
+	  double thetav= M_PI/2-absangle;
+	  double phiv = getRandom()*M_PI;
+	  double vx   = -1*signum(py)*cos(thetav)*magv;
+	  double vy   = signum(px)*sin(thetav)*magv;
 
 		if (getRandom() <= 0.5) {
 		  vx=-vx;
 		  vy=-vy;
 		}
 
-      double mass = getRandom()*solarmass*10+1e20;
+	  double mass = getRandom()*SOLAR_MASS*10+1e20;
 
-      this->bodies[i] = Body(mass, px,py, vx, vy);
-    }
-
-    //Put the central mass in
-    this->bodies[0] = Body(1e6*solarmass, 0,0, 0,0);//put a heavy body in the center
+	  this->bodies[i] = Body(mass, px,py, vx, vy);
+	}
 }
 
 double Simulator::exp(double lambda) {
@@ -74,7 +74,7 @@ void Simulator::addForces() {
       }
     }
     for (int i = 0; i < Simulator::NUM_BODIES; i++) {
-      this->bodies[i].update(1e11);
+      this->bodies[i].update(UPDATE_STEP);
     }
 }
 
@@ -84,9 +84,8 @@ double Simulator::getRandom() {
 }
 
 double Simulator::circlev(double rx, double ry) {
-    double solarmass=1.98892e30;
     double r2=sqrt(rx*rx+ry*ry);
-    double numerator=(6.67e-11)*1e6*solarmass;
+    double numerator=(GRAVITATIONAL_CONSTANT)*1e6*SOLAR_MASS;
     return sqrt(numerator/r2);
 }
 

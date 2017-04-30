@@ -10,9 +10,6 @@
 
 class Body {
 
-	static constexpr double G = 6.673e-11;
-	static constexpr double SOLAR_MASS = 1.98892e30;
-
 
 public:
 	Body(double m, double rx, double ry, double vx, double vy);

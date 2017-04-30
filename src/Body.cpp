@@ -8,6 +8,7 @@
 #include "Body.h"
 #include <stdio.h>
 #include <math.h>
+#include "Simulator.h"
 
 Body::Body(double m, double rx, double ry, double vx, double vy) {
 	this->m = m;
@@ -60,7 +61,7 @@ void Body::addForce(Body b) {
     double dx = b.rx - this->rx;
     double dy = b.ry - this->ry;
     double dist = sqrt(dx*dx + dy*dy);
-    double F = (G * this->m * b.m) / (dist*dist + EPS*EPS);
+    double F = (Simulator::GRAVITATIONAL_CONSTANT * this->m * b.m) / (dist*dist + EPS*EPS);
     this->fx += F * dx / dist;
     this->fy += F * dy / dist;
 
