@@ -7,17 +7,30 @@
 
 #ifndef SRC_BODY_H_
 #define SRC_BODY_H_
-#include <utility>
-
-typedef std::pair<double,double> tuple;
 
 class Body {
-	double m;
-	tuple pos;
-	tuple vel;
+
+	static constexpr double G = 6.673e-11;
+	static constexpr double SOLAR_MASS = 1.98892e30;
+
 
 public:
-	Body(double m, std::pair<double,double> pos, std::pair<double,double> vel);
+	Body(double m, double rx, double ry, double vx, double vy);
+	Body(double m, double rx, double ry, double vx, double vy, double fx, double fy);
+	Body();
+
+	double m;
+	double rx;
+	double ry;
+	double vx;
+	double vy;
+	double fx = 0.0;
+	double fy = 0.0;
+
+	void update(double step);
+	double distanceTo(Body b);
+	void resetForce();
+	void addForce(Body b);
 	void print();
 };
 

@@ -16,7 +16,7 @@ CFLAGS   = -std=c99 -Wall -I. -fopenmp -ggdb
 
 # C++ compiler and flags
 CPP 		= $(PATH_TO_G++) 
-CXXFLAGS	= -std=c++11 -fopenmp
+CXXFLAGS	= -std=c++11 -fopenmp -ggdb
 
 # Linker and flags
 LINKER   = $(PATH_TO_GCC6)
