@@ -15,7 +15,7 @@ set(SOURCE_FILES
         src/main/Body.h
         src/main/main.cpp
         src/main/Simulator.cpp
-        src/main/Simulator.h)
+        src/main/Simulator.h src/main/ConfigParser.cpp src/main/ConfigParser.h)
 
 include_directories(/usr/local/Cellar/gcc/6.3.0_1/lib/gcc/6/gcc/x86_64-apple-darwin16.4.0/6.3.0/include)
 

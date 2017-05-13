@@ -19,7 +19,9 @@ download_project(
 add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
 set(test_SRCS
-        gtest.cpp example_test.cpp example_test.h)
-add_executable(runUnitTests gtest.cpp ${test_SRCS})
+        gtest.cpp example_test.cpp example_test.h ConfigParser_test.cpp ConfigParser_test.h)
+set(main_SRCS
+        ../main/Body.cpp ../main/ConfigParser.cpp ../main/Body.cpp)
+add_executable(runUnitTests gtest.cpp ${test_SRCS} ${main_SRCS})
 target_link_libraries(runUnitTests gtest gmock)
 #add_test(runUnitTests runUnitTests) #included in all tutorials but I don't know what it actually does.

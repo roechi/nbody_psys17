@@ -39,7 +39,7 @@ Body::Body() {
 }
 
 void Body::update(double step) {
-	this->vx += step * this->fx / this->m;;
+	this->vx += step * this->fx / this->m;
 	this->vy += step * this->fy / this->m;
 	this->rx += step * this->vx;
 	this->ry += step * this->vy;
