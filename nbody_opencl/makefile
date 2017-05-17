@@ -28,17 +28,17 @@ SRCDIR   = src
 OBJDIR   = obj
 BINDIR   = bin
 
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
-INCLUDES := $(wildcard $(SRCDIR)/*.h)
-OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
+INCLUDES := $(wildcard $(SRCDIR)/*.hpp)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 rm       = rm -f
 
-$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	@$(CPP) $(CPPFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
-	@$(CC) $(OBJECTS) $(LFLAGS) -o $@
+	@$(CPP) $(OBJECTS) $(LFLAGS) -o $@
 	@echo "Linking complete!"
 
 .PHONY: clean
