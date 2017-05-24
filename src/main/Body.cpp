@@ -57,7 +57,7 @@ void Body::resetForce() {
 
 void Body::addForce(Body b) {
 
-    double EPS = 3E4;      // softening parameter (just to avoid infinities)
+    double EPS = 0;      // softening parameter (just to avoid infinities)
     double dx = b.rx - this->rx;
     double dy = b.ry - this->ry;
     double dist = sqrt(dx*dx + dy*dy);
@@ -69,6 +69,6 @@ void Body::addForce(Body b) {
 
 
 void Body::print() {
-	printf("Mass: %f, Position: (%f,%f), Velocity: (%f,%f)\n", this->m, this->rx, this->ry, this->vx, this->vy);
+	fprintf(stderr,"Mass: %f, Position: (%f,%f), Velocity: (%f,%f)\n", this->m, this->rx, this->ry, this->vx, this->vy);
 }
 
