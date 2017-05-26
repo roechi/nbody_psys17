@@ -28,6 +28,7 @@ public:
 	double distanceTo(Body b);
 	void resetForce();
 	void addForce(Body b);
+	void addForceAlternative(Body b);
 	void print();
 };
 

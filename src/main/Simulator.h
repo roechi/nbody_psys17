@@ -43,6 +43,8 @@ private:
 	void addForces();
 	void loop();
 
+	void compute();
+
 	double getRandom();
 	double circularVelocity(double rx, double ry);
 	double signum(double val);

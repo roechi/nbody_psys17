@@ -106,6 +106,35 @@ void Simulator::addForces() {
     }
 }
 
+/**
+ * Alternative formula
+ */
+void Simulator::compute() {
+    /* The calculated bodies (with their new velocities) should be added to a copy of the body array,
+     * so that values are not mixed in between steps
+     **/
+    Body *calculatedBodies = new Body[NUM_BODIES];
+
+    float sum_x = 0;
+    float sum_y = 0;
+    for (int i = 0; i < NUM_BODIES; i++) {
+        Body *currentBody = new Body(this->bodies[i]); //copy
+        currentBody->resetForce();
+        for (int j = 0; j < this->NUM_BODIES; j++) {
+            Body currentOtherBody = this->bodies[j];
+            currentBody->addForceAlternative(*currentBody);
+        }
+
+        calculatedBodies[i] = *currentBody;
+    }
+
+    for (int i = 0; i < NUM_BODIES; i++) {
+        delete(this->bodies[i]);
+    }
+
+    this->bodies = calculatedBodies;
+}
+
 double Simulator::getRandom() {
     double r = ((double) rand() / (RAND_MAX));
     return r;
