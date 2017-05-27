@@ -39,14 +39,14 @@ Body::Body() {
 }
 
 void Body::update(double step) {
-	this->vx += step * this->fx / this->m;
-	this->vy += step * this->fy / this->m;
+	this->vx += step * this->fx;
+	this->vy += step * this->fy;
 	this->rx += step * this->vx;
 	this->ry += step * this->vy;
 }
 
 double Body::distanceTo(Body b){
-	double dist = sqrt(pow(this->rx - b.rx,2) + pow(this->ry - b.ry, 2));
+	double dist = sqrt(pow(this->rx - b.rx, 2) + pow(this->ry - b.ry, 2));
 	return dist;
 }
 
@@ -60,24 +60,10 @@ void Body::addForce(Body b) {
     double EPS = 0;      // softening parameter (just to avoid infinities)
     double dx = b.rx - this->rx;
     double dy = b.ry - this->ry;
-    double dist = sqrt(dx*dx + dy*dy);
-    double F = (Simulator::GRAVITATIONAL_CONSTANT * this->m * b.m) / (dist*dist + EPS*EPS);
-    this->fx += F * dx / dist;
-    this->fy += F * dy / dist;
-}
-
-/**
- * Implementation of alternative force formula
- */
-void Body::addForceAlternative(Body b) {
-    double EPS = 0.01;              // softening parameter (just to avoid infinities)
-    double dx = b.rx - this->rx;    // force direction x
-    double dy = b.ry - this->ry;    // force direction y
     double dist = distanceTo(b);
-    double Fx = (Simulator::GRAVITATIONAL_CONSTANT * b.m * dx) / pow(dist*dist + EPS*EPS, 1.5);
-    double Fy = (Simulator::GRAVITATIONAL_CONSTANT * b.m * dy) / pow(dist*dist + EPS*EPS, 1.5);
-    this->fx += Fx;
-    this->fy += Fy;
+    double F = (Simulator::GRAVITATIONAL_CONSTANT * b.m) / pow(dist*dist + EPS*EPS, 1.5);
+    this->fx += F * dx;
+    this->fy += F * dy;
 }
 
 
