@@ -35,18 +35,18 @@ rm       = rm -f
 
 $(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@$(CPP) $(CPPFLAGS) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+#	@echo "Compiled "$<" successfully!"
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
 	@$(CPP) $(OBJECTS) $(LFLAGS) -o $@
-	@echo "Linking complete!"
+#	@echo "Linking complete!"
 
 .PHONY: clean
 clean:
 	@$(rm) $(OBJECTS)
-	@echo "Cleanup complete!"
+#	@echo "Cleanup complete!"
 
 .PHONY: remove
 remove: clean
 	@$(rm) $(BINDIR)/$(TARGET)
-	@echo "Executable removed!"
+#	@echo "Executable removed!"
