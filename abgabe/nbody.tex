@@ -1,0 +1,60 @@
+\documentclass[a4paper,11pt]{scrartcl} %Standard A4, 11pt Font Größe
+\usepackage{fullpage} %weniger Rand
+\usepackage[utf8]{inputenc} %richtige Kodierung, auch für Umlaute
+% \usepackage{german} %Deutsch mit Zeilenumbrüchen
+% \usepackage[german]{babel}
+\usepackage{latexsym} %laden von weiteren mathematischen Symbolen
+\usepackage{amssymb} % mathematische Symbolzeichensätze (z.B. \mathbb{)
+\usepackage{graphicx} %Figures und Subfigures
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[obeyspaces,hyphens]{url}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{amsmath}
+
+\definecolor{lightgray}{rgb}{0.6,0.6,0.6}
+\definecolor{darkgray}{rgb}{0.3,0.3,0.3}
+\newcommand{\err}[1]{$^{\textcolor{red}{#1}}$}
+\newcommand{\fl}[1]{\colorbox{lightgray!20}{\path{#1}}}
+\newcommand{\cd}[1]{\sethlcolor{darkgray} \textcolor{white}{\hl{\texttt{#1}}}}
+
+%Header und Titel
+\title{N-Body Simulation}
+\subtitle{VL Parallele Systeme, HTW Berlin, SS2017}
+\author{Richard Remus, Jonas Jaszkowic}
+\date{}
+
+%----------------------------------------------------------------------
+\begin{document}
+\maketitle
+% \tableofcontents
+
+\section{Astronomical Units}
+Distances, masses and velocities in the universe lead to large numbers that might not fit in floating
+point numbers. Therefore we scale these values to astronomical units. In astronomical units, time is
+measured in years, distances in AU and masses in solar-masses:
+
+\begin{align*}
+	1~yr &= 365.25 * 86400sec = 31557600~s \\
+	1~AU &= 149597870700~m \\
+	1~M &=  1.98892 \cdot 10^{30}~kg
+\end{align*}
+
+
+
+With these values we can scale the gravitational constant accordingly:
+
+\begin{align*}
+	6.674 \cdot 10^{-11} \frac{m^3}{kg \cdot s^2}
+	& =  6.674 \cdot 10^{-11} \cdot 2.98692\cdot 10^{-34} \frac{AU^3}{kg \cdot s^2}\\
+	& = 6.674 \cdot 10^{-11} \cdot 2.98692\cdot 10^{-34} \cdot 1.98892 \cdot 10^{30} \frac{AU^3}{M \cdot s^2} \\
+	& = 6.674 \cdot 10^{-11} \cdot 2.98692\cdot 10^{-34} \cdot 1.98892 \cdot 10^{30} \cdot 9.95844249\cdot 10^{14} \frac{AU^3}{M \cdot yr^2}\\
+	& = 39.445 \frac{AU^3}{M \cdot yr^2}
+\end{align*}
+
+
+% \bibliography{bibliography}{}
+% \bibliographystyle{plainurl}
+\end{document}
