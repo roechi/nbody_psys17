@@ -31,18 +31,28 @@
 \maketitle
 % \tableofcontents
 
-\section{Astronomical Units}
+\section{Introduction}
+Implementing a N-body simulation breaks down to solving the N-body problem of predicting the individual motions of a group of $n$ objects interacting with each other gravitationally. The exact solution to this problem has a time complexity of $\mathcal{O}(n^2)$ which means that it is not possible to solve it efficiently in an appropriate period of time, especially when the number of objects is large. Reducing time complexity can either be done by using approximate methods which produce a "good enough" solution or by parallelizing the algorithm on multi-core processors. For this work, we focus on the latter.
+
+\section{Two-body problem}
+
+\section{Three-body problem}
+
+\section{N-body problem}
+
+\section{Algorithm}
+
+\section{Implementation}
+\subsection{Astronomical Units}
 Distances, masses and velocities in the universe lead to large numbers that might not fit in floating
 point numbers. Therefore we scale these values to astronomical units. In astronomical units, time is
 measured in years, distances in AU and masses in solar-masses:
 
 \begin{align*}
-	1~yr &= 365.25 * 86400sec = 31557600~s \\
+	1~yr &= 365.25 * 86400~s = 31557600~s \\
 	1~AU &= 149597870700~m \\
 	1~M &=  1.98892 \cdot 10^{30}~kg
 \end{align*}
-
-
 
 With these values we can scale the gravitational constant accordingly:
 
@@ -53,6 +63,13 @@ With these values we can scale the gravitational constant accordingly:
 	& = 6.674 \cdot 10^{-11} \cdot 2.98692\cdot 10^{-34} \cdot 1.98892 \cdot 10^{30} \cdot 9.95844249\cdot 10^{14} \frac{AU^3}{M \cdot yr^2}\\
 	& = 39.445 \frac{AU^3}{M \cdot yr^2}
 \end{align*}
+
+\section{Parallelization}
+\subsection{OpenMP}
+\subsection{OpenCL}
+
+\section{Benchmarks}
+
 
 
 % \bibliography{bibliography}{}
