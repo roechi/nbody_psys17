@@ -17,58 +17,44 @@ Simulator::Simulator(std::string file_path) {
     file.open(file_path);
 }
 
+void Simulator::startSimulation(int num_bodies, int simulation_steps)
+{
+    this->NUM_BODIES = num_bodies;
+    this->SIMULATION_STEPS = simulation_steps;
+    startSimulation();
+}
+
 void Simulator::startSimulation() {
     this->generateBodies();
     this->loop();
     this->file.close();
 }
 
-void Simulator::startSimulation(int num_bodies, int simulation_steps)
-{
-    this->NUM_BODIES= num_bodies;
-    this->SIMULATION_STEPS = simulation_steps;
-    startSimulation();
-}
-
-void Simulator::loop() {
-
-    for (int step = 0; step < this->SIMULATION_STEPS; step++){
-        for(int i=0; i<this->NUM_BODIES; i++) {
-            double x = this->bodies[i].rx / RADIUS_UNIVERSE;
-            double y = this->bodies[i].ry / RADIUS_UNIVERSE;
-            double mass = this->bodies[i].m;
-            file << x << "\t" << y << "\t" << mass << "\t";
-        }
-        file << "\n";
-        addForces();
-    }
-
-}
-
 void Simulator::generateBodies() {
+    ConfigParser *parser = new ConfigParser();
+    int numberOfLines = parser->getNumberOfLines("../resources/solar_system.txt");
+    std::list<Body> parsedBodies = parser->parseFile("../resources/solar_system.txt");
 
-    // sun
-    bodies[0] = Body(Simulator::SOLAR_MASS, 0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00);
+    this->NUM_BODIES = numberOfLines;
 
-    // mercury
-    bodies[1] = Body(3.302e+23 / Simulator::MASS_SCALE, 57909175e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (47.8725e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-
-    // venus
-    bodies[2] = Body(4.8690e+24 / Simulator::MASS_SCALE, 108208930e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (35.0214e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-
-    // earth
-    bodies[3] = Body(5.9742e+24 / Simulator::MASS_SCALE, 149597890e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,   (29.7859e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-
-    // mars
-    bodies[4] = Body(6.4191e+23 / Simulator::MASS_SCALE, 227936640e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (24.1309e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-
-
-    for (int i = 0; i < Simulator::NUM_BODIES; ++i) {
-        bodies[i].print();
-    }
-
+//
+//    // sun
+//    bodies[0] = Body(Simulator::SOLAR_MASS, 0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00);
+//
+//    // mercury
+//    bodies[1] = Body(3.302e+23 / Simulator::MASS_SCALE, 57909175e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (47.8725e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
+//
+//    // venus
+//    bodies[2] = Body(4.8690e+24 / Simulator::MASS_SCALE, 108208930e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (35.0214e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
+//
+//    // earth
+//    bodies[3] = Body(5.9742e+24 / Simulator::MASS_SCALE, 149597890e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,   (29.7859e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
+//
+//    // mars
+//    bodies[4] = Body(6.4191e+23 / Simulator::MASS_SCALE, 227936640e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (24.1309e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
+//
 //    // jupiter
-//    bodies[5] = Body(1.8987e+27, 778412010e3,  0.0000e+00,  0.0000e+00,  1.30697e+4);
+//    bodies[5] = Body(1.8987e+27 / Simulator::MASS_SCALE, 778412010e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (1.30697e+4  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);*/
 //
 //    // saturn
 //    bodies[6] = Body(5.6851e+26, 1426725400e3,  0.0000e+00,  0.0000e+00,  0.96724e+4);
@@ -78,6 +64,43 @@ void Simulator::generateBodies() {
 //
 //    // neptune
 //    bodies[8] = Body(1.0244e+26, 4498252900e3,  0.0000e+00,  0.0000e+00,  0.54778e+4);
+
+    int k = 0;
+    for (Body b : parsedBodies) {
+        bodies[k] = b;
+        k++;
+    }
+
+    scaleBodies();
+
+    for (int i = 0; i < Simulator::NUM_BODIES; ++i) {
+        bodies[i].print();
+    }
+}
+
+void Simulator::scaleBodies() {
+    for (int i = 0; i < Simulator::NUM_BODIES; ++i) {
+        bodies[i].m /= Simulator::MASS_SCALE;
+        bodies[i].rx /= Simulator::LENGTH_SCALE;
+        bodies[i].ry /= Simulator::LENGTH_SCALE;
+        bodies[i].vx = (bodies[i].vx / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE;
+        bodies[i].vy = (bodies[i].vy / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE;
+    }
+}
+
+void Simulator::loop() {
+
+    for (int step = 0; step < this->SIMULATION_STEPS; step++){
+        for(int i=0; i < this->NUM_BODIES; i++) {
+            double x = this->bodies[i].rx / RADIUS_UNIVERSE;
+            double y = this->bodies[i].ry / RADIUS_UNIVERSE;
+            double mass = this->bodies[i].m;
+            file << x << "\t" << y << "\t" << mass << "\t";
+        }
+        file << "\n";
+        addForces();
+    }
+
 }
 
 double Simulator::exp(double lambda) {

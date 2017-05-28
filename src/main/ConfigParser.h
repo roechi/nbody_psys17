@@ -15,6 +15,7 @@ class ConfigParser {
 public:
     std::list<Body> parseFile(std::string file_path);
     Body parseLine(std::string line);
+    int getNumberOfLines(std::string file_path);
 
 private:
     std::list<std::string> read_file(std::istream& istream);

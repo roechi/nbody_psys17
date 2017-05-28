@@ -44,3 +44,16 @@ TEST(ConfigParserTest, testParseFileWithException) {
         std::cout << exception << "\n";
     }
 }
+
+
+TEST(ConfigParserTests, testGetNumberOfLines) {
+    ConfigParser *parser = new ConfigParser();
+
+    try {
+        int numberOfLines = parser->getNumberOfLines("../../../resources/test/example.txt");
+        ASSERT_EQ(numberOfLines, 5);
+    } catch (std::string exception) {
+        std::cout << exception << "\n";
+        FAIL();
+    }
+}

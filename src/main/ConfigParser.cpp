@@ -62,3 +62,14 @@ Body ConfigParser::parseLine(std::string line)
 
     return Body(arr[0], arr[1], arr[2], arr[3], arr[4]);
 }
+
+int ConfigParser::getNumberOfLines(std::string file_path) {
+    std::ifstream ifs(file_path);
+    if (!ifs.good())
+    {
+        throw (std::string("Could not read file at path ") + file_path);
+    }
+
+    std::list<std::string> lines = read_file(ifs);
+    return (int) lines.size();
+}

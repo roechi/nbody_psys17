@@ -8,6 +8,7 @@
 #ifndef SRC_SIMULATOR_H_
 #define SRC_SIMULATOR_H_
 #include "Body.h"
+#include "ConfigParser.h"
 #include <iostream>
 #include <fstream>
 
@@ -42,8 +43,7 @@ private:
 	void generateBodies();
 	void addForces();
 	void loop();
-
-	void compute();
+	void scaleBodies();
 
 	double getRandom();
 	double circularVelocity(double rx, double ry);
