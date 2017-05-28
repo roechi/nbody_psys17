@@ -12,14 +12,14 @@
 #include <iostream>
 #include <fstream>
 
-Simulator::Simulator(std::string file_path) {
+Simulator::Simulator(std::string input_file_path, std::string output_file_path) {
     this->bodies = new Body[Simulator::NUM_BODIES];
-    file.open(file_path);
+    file.open(output_file_path);
+    this->input_file_path = input_file_path;
 }
 
-void Simulator::startSimulation(int num_bodies, int simulation_steps)
+void Simulator::startSimulation(int simulation_steps)
 {
-    this->NUM_BODIES = num_bodies;
     this->SIMULATION_STEPS = simulation_steps;
     startSimulation();
 }
@@ -32,38 +32,10 @@ void Simulator::startSimulation() {
 
 void Simulator::generateBodies() {
     ConfigParser *parser = new ConfigParser();
-    int numberOfLines = parser->getNumberOfLines("../resources/solar_system.txt");
-    std::list<Body> parsedBodies = parser->parseFile("../resources/solar_system.txt");
+    int numberOfLines = parser->getNumberOfLines(this->input_file_path);
+    std::list<Body> parsedBodies = parser->parseFile(this->input_file_path);
 
     this->NUM_BODIES = numberOfLines;
-
-//
-//    // sun
-//    bodies[0] = Body(Simulator::SOLAR_MASS, 0.0000e+00,  0.0000e+00,  0.0000e+00,  0.0000e+00);
-//
-//    // mercury
-//    bodies[1] = Body(3.302e+23 / Simulator::MASS_SCALE, 57909175e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (47.8725e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-//
-//    // venus
-//    bodies[2] = Body(4.8690e+24 / Simulator::MASS_SCALE, 108208930e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (35.0214e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-//
-//    // earth
-//    bodies[3] = Body(5.9742e+24 / Simulator::MASS_SCALE, 149597890e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,   (29.7859e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-//
-//    // mars
-//    bodies[4] = Body(6.4191e+23 / Simulator::MASS_SCALE, 227936640e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (24.1309e+3  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);
-//
-//    // jupiter
-//    bodies[5] = Body(1.8987e+27 / Simulator::MASS_SCALE, 778412010e3 / Simulator::LENGTH_SCALE,  0.0000e+00,  0.0000e+00,  (1.30697e+4  / Simulator::LENGTH_SCALE) * Simulator::TIME_SCALE);*/
-//
-//    // saturn
-//    bodies[6] = Body(5.6851e+26, 1426725400e3,  0.0000e+00,  0.0000e+00,  0.96724e+4);
-//
-//    // uranus
-//    bodies[7] = Body(8.6849e+25, 2870972200e3,  0.0000e+00,  0.0000e+00,  0.68352e+4);
-//
-//    // neptune
-//    bodies[8] = Body(1.0244e+26, 4498252900e3,  0.0000e+00,  0.0000e+00,  0.54778e+4);
 
     int k = 0;
     for (Body b : parsedBodies) {

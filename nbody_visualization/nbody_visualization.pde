@@ -2,10 +2,11 @@
 BufferedReader reader;
 String line;
 int steps = 0; 
-String path = "/Users/jaszkowic/Desktop/positions.txt";
+String path = "/Users/leto/repos/nbody_psys17/cmake-build-debug/out4.txt";
+float scale = 0.1;
 
 void setup() {
-  size(700,700);
+  size(1000,1000);
   strokeWeight(1);
   stroke(255, 100);
   smooth();
@@ -17,6 +18,7 @@ void setup() {
 }
 
 void draw() {
+  
   background(0);
    try {
     line = reader.readLine();
@@ -30,15 +32,17 @@ void draw() {
   }
   if (line == null) {
     // Stop reading because of an error or file is empty
-    delay(5000);
+    delay(10000);
     noLoop();  
   } else {
     String[] pieces = split(line, TAB);
     int numBodies = pieces.length / 3;
+    text("Bodies: " + numBodies, 10, 50);
     for(int i = 0; i < numBodies; i++) {
+     //delay(500);
       // each step is a day
-      float x = float(pieces[3*i+0]) * (width /2) + (width/2);
-      float y = float(pieces[3*i+1]) * (height/2) + (height/2);
+      float x = float(pieces[3*i+0] * scale) * (width /2) + (width/2);
+      float y = float(pieces[3*i+1] * scale) * (height/2) + (height/2);
  
       fill(255,255,255);
       stroke(255,255,255);
