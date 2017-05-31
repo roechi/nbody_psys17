@@ -9,7 +9,7 @@ kernel void nbody_move(global float* masses,
     int cur_idx_1d = get_global_id(0);
     int cur_idx_2d = get_global_id(0) * 2;
     float2 cur_pos = (float2)(positions[cur_idx_2d],positions[cur_idx_2d+1]);
-    float2 cur_vel =  (float2)(velocities[cur_idx_2d]+2.0f,velocities[cur_idx_2d+1]);
+    float2 cur_vel =  (float2)(velocities[cur_idx_2d],velocities[cur_idx_2d+1]);
     float cur_mass = masses[cur_idx_1d];
     const float GRAVITATIONAL_CONSTANT = 39.5;
 
@@ -33,15 +33,14 @@ kernel void nbody_move(global float* masses,
       }
     }
 
-    //printf("Force for %i: %e,%e\n",cur_idx_1d,force.x,force.y);
-    //printf("step_size:%e\n",step_size);
-    //printf("cur_mass:%e,%e\n",pos_delta);
-    //printf("dist:%e\n",dist);
-    //printf("F:%e\n",F);
-
     // Update position
     velocities[cur_idx_2d] += step_size * force.x / cur_mass;
     velocities[cur_idx_2d+1] += step_size * force.y / cur_mass;
     positions[cur_idx_2d] += step_size * velocities[cur_idx_2d];
     positions[cur_idx_2d+1] += step_size * velocities[cur_idx_2d+1];
+
+    velocities[0] = 0.0f;
+    velocities[1] = 0.0f;
+    positions[0] = 0.0f;
+    positions[1] = 0.0f;
 }

@@ -5,9 +5,12 @@
 #include "util.hpp"
 
 int main() {
-    const float UPDATE_STEP = 1.0f / 365.25f;
+    srand((unsigned int)time(NULL));
+
+//    const float UPDATE_STEP = 1.0f / 365.25f;
+    const float UPDATE_STEP = 1.0f / 4000.25f;
     const float RADIUS_UNIVERSE = 3.0;
-    size_t num_bodies = 5;
+    size_t num_bodies = 1000;
 
     float masses[num_bodies] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     float positions[num_bodies*2] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
@@ -99,7 +102,7 @@ int main() {
         queue.enqueueReadBuffer(buffer_velocities,CL_TRUE,0,sizeof(float)*num_bodies*2,velocities);
 
         for (int j = 0; j < num_bodies; ++j) {
-            fprintf(stdout,"%e\t%e\t%e\t",positions[2*j+0]/RADIUS_UNIVERSE,positions[2*j+1]/RADIUS_UNIVERSE,masses[j]);
+            fprintf(stdout,"%e\t%e\t%e\t",positions[2*j+0]/(RADIUS_UNIVERSE*10.0f),positions[2*j+1]/(RADIUS_UNIVERSE*10.0f),masses[j]);
         }
         printf("\n");
     }
