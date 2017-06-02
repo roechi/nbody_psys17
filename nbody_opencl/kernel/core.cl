@@ -8,8 +8,8 @@ kernel void nbody_move(global float* masses,
     // Values of body of interest  
     int cur_idx_1d = get_global_id(0);
     int cur_idx_2d = get_global_id(0) * 2;
-    float2 cur_pos = (float2)(positions[cur_idx_2d]+1.0f,positions[cur_idx_2d+1] + 1.0f);
-    float2 cur_vel =  (float2)(velocities[cur_idx_2d]+2.0f,velocities[cur_idx_2d+1] + 2.0f);
+    float2 cur_pos = (float2)(positions[cur_idx_2d],positions[cur_idx_2d+1]);
+    float2 cur_vel =  (float2)(velocities[cur_idx_2d]+2.0f,velocities[cur_idx_2d+1]);
     float cur_mass = masses[cur_idx_1d];
     const float GRAVITATIONAL_CONSTANT = 39.5;
 
@@ -20,11 +20,11 @@ kernel void nbody_move(global float* masses,
       int idx_2d = i * 2;
 
       if(idx_1d != cur_idx_1d) {
-        float2 pos = (float2)(positions[idx_2d]+1.0f,positions[idx_2d+1] + 1.0f);
-        float2 vel =  (float2)(velocities[idx_2d]+2.0f,velocities[idx_2d+1] + 2.0f);
+        float2 pos = (float2)(positions[idx_2d],positions[idx_2d+1]);
+        float2 vel =  (float2)(velocities[idx_2d],velocities[idx_2d+1]);
         float mass = masses[idx_1d];
 
-        float EPS = 0.0f;      // softening parameter (just to avoid infinities)
+        float EPS = 0.00000000001f;      // softening parameter (just to avoid infinities)
         float2 pos_delta = pos - cur_pos;
         float dist = sqrt(pos_delta.x*pos_delta.x + pos_delta.y*pos_delta.y);
         float F = (GRAVITATIONAL_CONSTANT * cur_mass * mass) / (dist*dist + EPS*EPS);
