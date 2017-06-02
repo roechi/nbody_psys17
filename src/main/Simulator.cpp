@@ -7,15 +7,12 @@
 
 #include "Simulator.h"
 #include <random>
-#include "Body.h"
 #include <chrono>
-#include <iostream>
-#include <fstream>
 
 Simulator::Simulator(std::string input_file_path, std::string output_file_path) {
-    this->bodies = new Body[Simulator::NUM_BODIES];
     file.open(output_file_path);
     this->input_file_path = input_file_path;
+    this->generateBodies();
 }
 
 void Simulator::startSimulation(int simulation_steps)
@@ -25,7 +22,6 @@ void Simulator::startSimulation(int simulation_steps)
 }
 
 void Simulator::startSimulation() {
-    this->generateBodies();
     this->loop();
     this->file.close();
 }
@@ -33,9 +29,10 @@ void Simulator::startSimulation() {
 void Simulator::generateBodies() {
     ConfigParser *parser = new ConfigParser();
     int numberOfLines = parser->getNumberOfLines(this->input_file_path);
+    this->NUM_BODIES = numberOfLines;
+    this->bodies = new Body[Simulator::NUM_BODIES];
     std::list<Body> parsedBodies = parser->parseFile(this->input_file_path);
 
-    this->NUM_BODIES = numberOfLines;
 
     int k = 0;
     for (Body b : parsedBodies) {
