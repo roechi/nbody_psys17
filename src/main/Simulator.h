@@ -24,17 +24,14 @@ public:
      * @param output_file_path The path to the output file where the positions are stored
      */
     Simulator(const std::string& input_file_path, const std::string& output_file_path, int simulation_steps) {
-        this->parser = ConfigParser();
         this->input_file_path = input_file_path;
-        this->output_file_path = output_file_path;
         this->simulation_steps = simulation_steps;
-        std::ofstream* out = new std::ofstream(output_file_path);
-        this->output_file = out;
-        this->output_file->open(output_file_path);
+        this->output_file.open(output_file_path);
     }
 
     /**
-     * Starts the simulation and performs simulation_steps steps, which is set in the constructor
+     * Starts the simulation and performs simulation_steps steps, which is set in the constructor.
+     * Don't forget to close() the output file when the simulation finished!
      */
     virtual void startSimulation() = 0;
 
@@ -73,12 +70,8 @@ protected:
      */
     int simulation_steps = -1;
 
-
     std::string input_file_path;
-    std::string output_file_path;
-    std::ofstream* output_file;
-    ConfigParser parser;
-
+    std::ofstream output_file;
 
     double getRandom() {
         double r = ((double) rand() / (RAND_MAX));

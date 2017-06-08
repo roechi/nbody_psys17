@@ -21,7 +21,7 @@ void OmpSimulator::initializeBodies() {
 
 void OmpSimulator::startSimulation() {
     this->loop();
-    this->output_file->close();
+    this->output_file.close();
 }
 
 void OmpSimulator::generateBodies() {
@@ -55,9 +55,9 @@ void OmpSimulator::loop() {
             double x = this->bodies[i].rx / RADIUS_UNIVERSE;
             double y = this->bodies[i].ry / RADIUS_UNIVERSE;
             double mass = this->bodies[i].m;
-            *this->output_file << x << "\t" << y << "\t" << mass << "\t";
+            this->output_file << x << "\t" << y << "\t" << mass << "\t";
         }
-        *this->output_file << "\n";
+        this->output_file << "\n";
         addForces();
     }
 
