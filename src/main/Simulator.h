@@ -14,9 +14,10 @@
 
 class Simulator {
 public:
+	Simulator(std::string input_file_path);
 	Simulator(std::string input_file_path, std::string output_file_path);
-	void startSimulation();
-	void startSimulation(int simulation_steps);
+	int startSimulation();
+	int startSimulation(int simulation_steps);
 
 	int NUM_BODIES = 5;
 	int SIMULATION_STEPS = 10000;
@@ -38,12 +39,15 @@ public:
 
 private:
 
+	enum class Mode {FILE, CONSOLE};
+
+	Mode mode;
 	Body* bodies;
     std::string input_file_path;
 
 	void generateBodies();
 	void addForces();
-	void loop();
+	int loop();
 	void scaleBodies();
 
 	double getRandom();
@@ -52,6 +56,8 @@ private:
 	double exp(double lambda);
 
     std::ofstream file;
+
+	void runStep();
 };
 
 #endif /* SRC_SIMULATOR_H_ */

@@ -6,24 +6,38 @@
  */
 
 #include "Simulator.h"
+#include "SignalHandler.h"
 #include <random>
 #include <chrono>
 
+Simulator::Simulator(std::string input_file_path) {
+    this->mode = Mode::CONSOLE;
+    this->input_file_path = input_file_path;
+    this->generateBodies();
+}
+
 Simulator::Simulator(std::string input_file_path, std::string output_file_path) {
+    this->mode = Mode::FILE;
     file.open(output_file_path);
     this->input_file_path = input_file_path;
     this->generateBodies();
 }
 
-void Simulator::startSimulation(int simulation_steps)
-{
+int Simulator::startSimulation(int simulation_steps) {
     this->SIMULATION_STEPS = simulation_steps;
-    startSimulation();
+    int result = startSimulation();
+    return result;
 }
 
-void Simulator::startSimulation() {
-    this->loop();
+int Simulator::startSimulation() {
+    int result = this->loop();
+
+    std::cout << "Quitting...\n";
+
+    delete[](this->bodies);
+
     this->file.close();
+    return result;
 }
 
 void Simulator::generateBodies() {
@@ -57,23 +71,60 @@ void Simulator::scaleBodies() {
     }
 }
 
-void Simulator::loop() {
+int Simulator::loop() {
 
-    for (int step = 0; step < this->SIMULATION_STEPS; step++){
-        for(int i=0; i < this->NUM_BODIES; i++) {
-            double x = this->bodies[i].rx / RADIUS_UNIVERSE;
-            double y = this->bodies[i].ry / RADIUS_UNIVERSE;
-            double mass = this->bodies[i].m;
-            file << x << "\t" << y << "\t" << mass << "\t";
+    int iret = 0;
+    if (SIMULATION_STEPS != -1) {
+        for (int step = 0; step < this->SIMULATION_STEPS; step++) {
+            runStep();
         }
-        file << "\n";
-        addForces();
-    }
+    } else {
 
+        try {
+            SignalHandler signalHandler;
+
+            // Register signal handler to handle kill signal
+            signalHandler.setupSignalHandlers();
+
+            // Infinite loop until signal ctrl-c (KILL) received
+            while (!signalHandler.gotExitSignal()) {
+                runStep();
+            }
+
+            iret = EXIT_SUCCESS;
+        }
+        catch (SignalException &e) {
+            std::cerr << "SignalException: " << e.what() << std::endl;
+            iret = EXIT_FAILURE;
+        }
+    }
+    return (iret);
+}
+
+void Simulator::runStep() {
+
+    for (int i = 0; i < NUM_BODIES; i++) {
+        double x = bodies[i].rx / RADIUS_UNIVERSE;
+        double y = bodies[i].ry / RADIUS_UNIVERSE;
+        double mass = bodies[i].m;
+
+        if (this->mode == Mode::FILE) {
+            file << x << "\t" << y << "\t" << mass << "\t";
+        } else {
+            std::cout << x << "\t" << y << "\t" << mass << "\t";
+        }
+    }
+    
+    if (this->mode == Mode::FILE) {
+        file << "\n";
+    } else {
+        std::cout << "\n";
+    }
+    addForces();
 }
 
 double Simulator::exp(double lambda) {
-        return -log(1 - getRandom()) / lambda;
+    return -log(1 - getRandom()) / lambda;
 }
 
 void Simulator::addForces() {
@@ -84,17 +135,17 @@ void Simulator::addForces() {
     }
 
     #pragma omp parallel for collapse(2)
-    for (int i = 0; i <  this->NUM_BODIES; i++) {
-      for (int j = 0; j <  this->NUM_BODIES; j++) {
-        if (i != j) {
-            this->bodies[i].addForce(this->bodies[j]);
+    for (int i = 0; i < this->NUM_BODIES; i++) {
+        for (int j = 0; j < this->NUM_BODIES; j++) {
+            if (i != j) {
+                this->bodies[i].addForce(this->bodies[j]);
+            }
         }
-      }
     }
 
     #pragma omp parallel for
     for (int i = 0; i < Simulator::NUM_BODIES; i++) {
-      this->bodies[i].update(UPDATE_STEP);
+        this->bodies[i].update(UPDATE_STEP);
     }
 }
 
@@ -104,9 +155,9 @@ double Simulator::getRandom() {
 }
 
 double Simulator::circularVelocity(double rx, double ry) {
-    double r2=sqrt(rx*rx+ry*ry);
-    double numerator=(GRAVITATIONAL_CONSTANT)*1e6*SOLAR_MASS;
-    return sqrt(numerator/r2);
+    double r2 = sqrt(rx * rx + ry * ry);
+    double numerator = (GRAVITATIONAL_CONSTANT) * 1e6 * SOLAR_MASS;
+    return sqrt(numerator / r2);
 }
 
 double Simulator::signum(double val) {
