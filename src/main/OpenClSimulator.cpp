@@ -40,15 +40,6 @@ void OpenClSimulator::scaleBodies() {
 }
 
 void OpenClSimulator::startSimulation() {
-    srand((unsigned int)time(NULL));
-
-    for (int i = 0; i < num_bodies; ++i) {
-        fprintf(stderr,"M:[%e,%e]\t", masses[i]);
-        fprintf(stderr,"Pos:[%e,%e]\t", positions[i*2],positions[i*2+1]);
-        fprintf(stderr,"Vel:[%e,%e]\t", velocities[i*2],velocities[i*2+1]);
-        fprintf(stderr,"\n");
-    }
-    fprintf(stderr,"\n");
 
     //get all platforms (drivers)
     std::vector<cl::Platform> all_platforms;
