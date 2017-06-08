@@ -8,7 +8,7 @@
 #include "Body.h"
 #include <stdio.h>
 #include <math.h>
-#include "Simulator.h"
+#include "OmpSimulator.h"
 
 Body::Body(double m, double rx, double ry, double vx, double vy) {
 	this->m = m;

@@ -3,7 +3,7 @@
 #include <omp.h>
 #include <string.h>
 #include "Body.h"
-#include "Simulator.h"
+#include "OmpSimulator.h"
 #include <utility>
 
 int main(int argc, char **argv)
