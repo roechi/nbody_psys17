@@ -6,49 +6,35 @@
  */
 
 #include "OmpSimulator.h"
-#include "Simulator.h"
 #include <random>
-#include "Body.h"
 #include <chrono>
-#include <iostream>
-#include <fstream>
-
 
 OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps)
         : Simulator(input_file_path, output_file_path, simulation_steps) {
-
+    initializeBodies();
 }
 
 void OmpSimulator::initializeBodies() {
-    this->bodies = parser.parseFile(this->input_file_path);
+    this->generateBodies();
+    this->scaleBodies();
 }
 
 void OmpSimulator::startSimulation() {
-    this->generateBodies();
-    this->scaleBodies();
     this->loop();
+    this->output_file->close();
 }
 
 void OmpSimulator::generateBodies() {
     ConfigParser *parser = new ConfigParser();
     int numberOfLines = parser->getNumberOfLines(this->input_file_path);
-    std::list<Body> parsedBodies = parser->parseFile(this->input_file_path);
-
-    /**
-     * Set the number of bodies according to the number of lines in the config file
-     */
     this->num_bodies = numberOfLines;
+    this->bodies = new Body[this->num_bodies];
+    std::list<Body> parsedBodies = parser->parseFile(this->input_file_path);
 
     int k = 0;
     for (Body b : parsedBodies) {
         bodies[k] = b;
         k++;
-    }
-
-    scaleBodies();
-
-    for (int i = 0; i < this->num_bodies; ++i) {
-        bodies[i].print();
     }
 }
 
@@ -64,14 +50,14 @@ void OmpSimulator::scaleBodies() {
 
 void OmpSimulator::loop() {
 
-    for (int step = 0; step < this->SIMULATION_STEPS; step++){
+    for (int step = 0; step < this->simulation_steps; step++){
         for(int i=0; i < this->num_bodies; i++) {
             double x = this->bodies[i].rx / RADIUS_UNIVERSE;
             double y = this->bodies[i].ry / RADIUS_UNIVERSE;
             double mass = this->bodies[i].m;
-            file << x << "\t" << y << "\t" << mass << "\t";
+            *this->output_file << x << "\t" << y << "\t" << mass << "\t";
         }
-        file << "\n";
+        *this->output_file << "\n";
         addForces();
     }
 

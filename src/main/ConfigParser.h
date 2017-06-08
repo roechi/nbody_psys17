@@ -37,7 +37,6 @@ public:
      */
     int getNumberOfLines(std::string file_path);
 
-private:
     Body parseLine(std::string line);
     std::list<std::string> read_file(std::istream& istream);
 };

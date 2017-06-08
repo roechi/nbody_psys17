@@ -13,21 +13,21 @@
 #include <iostream>
 
 
-class OmpSimulator : Simulator {
+class OmpSimulator : public Simulator {
 
 public:
     OmpSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps);
     void startSimulation();
+    void initializeBodies();
 
 protected:
 
-    void initializeBodies();
     void generateBodies();
     void scaleBodies();
     void loop();
     void addForces();
 
-    std::list<Body> bodies;
+    Body* bodies;
 
 private:
 
