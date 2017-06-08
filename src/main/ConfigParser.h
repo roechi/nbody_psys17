@@ -28,7 +28,7 @@ public:
      * @return void, the actual values are saved in the float[] arrays given as parameters
      */
     void parseFile(std::string file_path, float* masses, float* positions, float* velocities, float* forces);
-
+    float* parseLineRaw(std::string line);
 
     /**
      * Gets the number of lines in the file at path file_path, i.e. the number of bodies in the file
