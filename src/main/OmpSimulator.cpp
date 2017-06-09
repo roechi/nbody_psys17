@@ -28,7 +28,9 @@ void OmpSimulator::initializeBodies() {
 
 int OmpSimulator::startSimulation() {
     int exit_status = this->loop();
-    this->output_file.close();
+    if (this->mode == Mode::FILE) {
+        this->output_file.close();
+    }
 
     return exit_status;
 }
@@ -59,7 +61,7 @@ void OmpSimulator::scaleBodies() {
 
 int OmpSimulator::loop() {
     int iret = EXIT_SUCCESS;
-    
+
     if (simulation_steps != -1) {
         for (int step = 0; step < this->simulation_steps; step++) {
             runStep();
@@ -86,9 +88,17 @@ void OmpSimulator::runStep() {
         double x = bodies[i].rx / RADIUS_UNIVERSE;
         double y = bodies[i].ry / RADIUS_UNIVERSE;
         double mass = bodies[i].m;
-        output_file << x << "\t" << y << "\t" << mass << "\t";
+        if (this->mode == Mode::FILE) {
+            output_file << x << "\t" << y << "\t" << mass << "\t";
+        } else if (this->mode == Mode::CONSOLE) {
+            std::cout << x << "\t" << y << "\t" << mass << "\t";
+        }
     }
-    output_file << "\n";
+    if (this->mode == Mode::FILE) {
+        output_file << "\n";
+    } else {
+        std::cout << "\n";
+    }
     addForces();
 }
 
