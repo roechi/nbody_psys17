@@ -7,16 +7,15 @@
 #include "Util.h"
 #include "SignalHandler.h"
 
-OpenClSimulator::OpenClSimulator(const std::string &input_file_path, const std::string &output_file_path,
-                                 int simulation_steps)
-        : Simulator(input_file_path, output_file_path, simulation_steps) {
+OpenClSimulator::OpenClSimulator(const std::string &input_file_path, const std::string &output_file_path)
+        : Simulator(input_file_path, output_file_path) {
 //    output_file.open(output_file_path);
     initializeBodies();
     scaleBodies();
 }
 
-OpenClSimulator::OpenClSimulator(const std::string &input_file_path, int simulation_steps)
-        : Simulator(input_file_path, simulation_steps) {
+OpenClSimulator::OpenClSimulator(const std::string &input_file_path)
+        : Simulator(input_file_path) {
 //    output_file.open(output_file_path);
     initializeBodies();
     scaleBodies();
@@ -48,7 +47,7 @@ void OpenClSimulator::scaleBodies() {
     }
 }
 
-int OpenClSimulator::startSimulation() {
+int OpenClSimulator::startSimulation(int simulation_steps) {
 
     //get all platforms (drivers)
     std::vector<cl::Platform> all_platforms;

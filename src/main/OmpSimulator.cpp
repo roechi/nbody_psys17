@@ -10,14 +10,13 @@
 #include <random>
 #include <chrono>
 
-OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string &output_file_path,
-                           int simulation_steps)
-        : Simulator(input_file_path, output_file_path, simulation_steps) {
+OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string &output_file_path)
+        : Simulator(input_file_path, output_file_path) {
     initializeBodies();
 }
 
-OmpSimulator::OmpSimulator(const std::string &input_file_path, int simulation_steps)
-        : Simulator(input_file_path, simulation_steps) {
+OmpSimulator::OmpSimulator(const std::string &input_file_path)
+        : Simulator(input_file_path) {
     initializeBodies();
 }
 
@@ -26,8 +25,8 @@ void OmpSimulator::initializeBodies() {
     this->scaleBodies();
 }
 
-int OmpSimulator::startSimulation() {
-    int exit_status = this->loop();
+int OmpSimulator::startSimulation(int simulation_steps) {
+    int exit_status = this->loop(simulation_steps);
     if (this->mode == Mode::FILE) {
         this->output_file.close();
     }
@@ -59,11 +58,11 @@ void OmpSimulator::scaleBodies() {
     }
 }
 
-int OmpSimulator::loop() {
+int OmpSimulator::loop(int simulation_steps) {
     int iret = EXIT_SUCCESS;
 
     if (simulation_steps != -1) {
-        for (int step = 0; step < this->simulation_steps; step++) {
+        for (int step = 0; step < simulation_steps; step++) {
             runStep();
         }
     } else {

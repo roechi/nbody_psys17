@@ -24,16 +24,14 @@ public:
      * @param input_file_path The path to the config file
      * @param output_file_path The path to the output file where the positions are stored
      */
-    Simulator(const std::string& input_file_path, const std::string& output_file_path, int simulation_steps) {
+    Simulator(const std::string& input_file_path, const std::string& output_file_path) {
         this->input_file_path = input_file_path;
-        this->simulation_steps = simulation_steps;
         this->output_file.open(output_file_path);
         this->mode = Mode::FILE;
     }
 
-    Simulator(const std::string& input_file_path, int simulation_steps) {
+    Simulator(const std::string& input_file_path) {
         this->input_file_path = input_file_path;
-        this->simulation_steps = simulation_steps;
         this->mode = Mode::CONSOLE;
     }
 
@@ -41,7 +39,7 @@ public:
      * Starts the simulation and performs simulation_steps steps, which is set in the constructor.
      * Don't forget to close() the output file when the simulation finished!
      */
-    virtual int startSimulation() = 0;
+    virtual int startSimulation(int simulation_steps) = 0;
 
 
     /**
@@ -71,12 +69,6 @@ protected:
      * after parsing the config file and determining the number of bodies
      */
     int num_bodies = -1;
-
-    /**
-     * Number of simulation steps, execution stops after this number of steps. This value
-     * should be set according to the constructor parameter
-     */
-    int simulation_steps = -1;
 
     std::string input_file_path;
     std::ofstream output_file;
