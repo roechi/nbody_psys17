@@ -29,6 +29,11 @@ public:
         this->output_file.open(output_file_path);
     }
 
+    Simulator(const std::string& input_file_path, int simulation_steps) {
+        this->input_file_path = input_file_path;
+        this->simulation_steps = simulation_steps;
+    }
+
     /**
      * Starts the simulation and performs simulation_steps steps, which is set in the constructor.
      * Don't forget to close() the output file when the simulation finished!
@@ -42,13 +47,13 @@ public:
      * This allows us to use float instead of float because the values will most likely stay in the float scale
      * This is needed because OpenCL kernels do not support float values (depending on hardware)
      */
-    static constexpr float RADIUS_UNIVERSE = 3.0;
-    static constexpr float SOLAR_MASS = 1.0;
-    static constexpr float GRAVITATIONAL_CONSTANT = 39.5;
-    static constexpr float UPDATE_STEP = 1.0 / 365.25; // Update step 1 day
-    static constexpr float MASS_SCALE = 1.98892e+30; // 1 Solar Mass in kg
-    static constexpr float LENGTH_SCALE =  149597870700; // 1 AU in m
-    static constexpr float TIME_SCALE = 86400 * 365.25; // 1 year in seconds
+    static constexpr double RADIUS_UNIVERSE = 3.0;
+    static constexpr double SOLAR_MASS = 1.0;
+    static constexpr double GRAVITATIONAL_CONSTANT = 39.5;
+    static constexpr double UPDATE_STEP = 1.0 / 365.25; // Update step 1 day
+    static constexpr double MASS_SCALE = 1.98892e+30; // 1 Solar Mass in kg
+    static constexpr double LENGTH_SCALE =  149597870700; // 1 AU in m
+    static constexpr double TIME_SCALE = 86400 * 365.25; // 1 year in seconds
 
 protected:
 
@@ -92,12 +97,6 @@ protected:
         return -log(1 - getRandom()) / lambda;
     }
 
-private:
-
-
 };
-
-
-#include <fstream>
 
 #endif /* SRC_SIMULATOR_H_ */

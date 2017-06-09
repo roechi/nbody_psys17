@@ -11,6 +11,7 @@ class OpenClSimulator : public Simulator {
 
 public:
     OpenClSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps);
+    OpenClSimulator(const std::string &input_file_path, int simulation_steps);
     void startSimulation();
     void initializeBodies();
     void scaleBodies();

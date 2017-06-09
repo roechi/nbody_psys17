@@ -13,6 +13,13 @@ OpenClSimulator::OpenClSimulator(const std::string &input_file_path, const std::
     scaleBodies();
 }
 
+OpenClSimulator::OpenClSimulator(const std::string &input_file_path, int simulation_steps)
+        : Simulator(input_file_path, simulation_steps) {
+//    output_file.open(output_file_path);
+    initializeBodies();
+    scaleBodies();
+}
+
 void OpenClSimulator::initializeBodies() {
     ConfigParser *parser = new ConfigParser();
     int numberOfLines = parser->getNumberOfLines(this->input_file_path);

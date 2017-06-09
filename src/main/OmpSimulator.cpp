@@ -14,6 +14,11 @@ OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string
     initializeBodies();
 }
 
+OmpSimulator::OmpSimulator(const std::string &input_file_path, int simulation_steps)
+        : Simulator(input_file_path, simulation_steps) {
+    initializeBodies();
+}
+
 void OmpSimulator::initializeBodies() {
     this->generateBodies();
     this->scaleBodies();

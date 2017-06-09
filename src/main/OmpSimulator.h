@@ -17,6 +17,7 @@ class OmpSimulator : public Simulator {
 
 public:
     OmpSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps);
+    OmpSimulator(const std::string &input_file_path, int simulation_steps);
     void startSimulation();
     void initializeBodies();
 
