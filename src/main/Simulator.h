@@ -9,6 +9,7 @@
 #define SRC_SIMULATOR_H_
 #include "Body.h"
 #include "ConfigParser.h"
+#include "Mode.h"
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -27,18 +28,20 @@ public:
         this->input_file_path = input_file_path;
         this->simulation_steps = simulation_steps;
         this->output_file.open(output_file_path);
+        this->mode = Mode::FILE;
     }
 
     Simulator(const std::string& input_file_path, int simulation_steps) {
         this->input_file_path = input_file_path;
         this->simulation_steps = simulation_steps;
+        this->mode = Mode::CONSOLE;
     }
 
     /**
      * Starts the simulation and performs simulation_steps steps, which is set in the constructor.
      * Don't forget to close() the output file when the simulation finished!
      */
-    virtual void startSimulation() = 0;
+    virtual int startSimulation() = 0;
 
 
     /**
@@ -97,6 +100,7 @@ protected:
         return -log(1 - getRandom()) / lambda;
     }
 
+    Mode mode;
 };
 
 #endif /* SRC_SIMULATOR_H_ */

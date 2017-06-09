@@ -18,14 +18,14 @@ class OmpSimulator : public Simulator {
 public:
     OmpSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps);
     OmpSimulator(const std::string &input_file_path, int simulation_steps);
-    void startSimulation();
+    int startSimulation();
     void initializeBodies();
 
 protected:
 
     void generateBodies();
     void scaleBodies();
-    void loop();
+    int loop();
     void addForces();
 
     Body* bodies;
@@ -33,6 +33,7 @@ protected:
 private:
 
 
+    void runStep();
 };
 
 

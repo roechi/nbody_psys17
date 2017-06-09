@@ -6,10 +6,12 @@
  */
 
 #include "OmpSimulator.h"
+#include "SignalHandler.h"
 #include <random>
 #include <chrono>
 
-OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps)
+OmpSimulator::OmpSimulator(const std::string &input_file_path, const std::string &output_file_path,
+                           int simulation_steps)
         : Simulator(input_file_path, output_file_path, simulation_steps) {
     initializeBodies();
 }
@@ -24,9 +26,11 @@ void OmpSimulator::initializeBodies() {
     this->scaleBodies();
 }
 
-void OmpSimulator::startSimulation() {
-    this->loop();
+int OmpSimulator::startSimulation() {
+    int exit_status = this->loop();
     this->output_file.close();
+
+    return exit_status;
 }
 
 void OmpSimulator::generateBodies() {
@@ -53,40 +57,60 @@ void OmpSimulator::scaleBodies() {
     }
 }
 
-void OmpSimulator::loop() {
-
-    for (int step = 0; step < this->simulation_steps; step++){
-        for(int i=0; i < this->num_bodies; i++) {
-            double x = this->bodies[i].rx / RADIUS_UNIVERSE;
-            double y = this->bodies[i].ry / RADIUS_UNIVERSE;
-            double mass = this->bodies[i].m;
-            this->output_file << x << "\t" << y << "\t" << mass << "\t";
+int OmpSimulator::loop() {
+    int iret = EXIT_SUCCESS;
+    
+    if (simulation_steps != -1) {
+        for (int step = 0; step < this->simulation_steps; step++) {
+            runStep();
         }
-        this->output_file << "\n";
-        addForces();
+    } else {
+        try {
+            SignalHandler signalHandler;
+            signalHandler.setupSignalHandlers();
+
+            while (!signalHandler.gotExitSignal()) {
+                runStep();
+            }
+        } catch (SignalException &e) {
+            std::cerr << e.what();
+            iret = EXIT_FAILURE;
+        }
     }
 
+    return iret;
+}
+
+void OmpSimulator::runStep() {
+    for (int i = 0; i < num_bodies; i++) {
+        double x = bodies[i].rx / RADIUS_UNIVERSE;
+        double y = bodies[i].ry / RADIUS_UNIVERSE;
+        double mass = bodies[i].m;
+        output_file << x << "\t" << y << "\t" << mass << "\t";
+    }
+    output_file << "\n";
+    addForces();
 }
 
 void OmpSimulator::addForces() {
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int k = 0; k < this->num_bodies; ++k) {
         this->bodies[k].resetForce();
     }
 
-    #pragma omp parallel for collapse(2)
-    for (int i = 0; i <  this->num_bodies; i++) {
-      for (int j = 0; j <  this->num_bodies; j++) {
-        if (i != j) {
-            this->bodies[i].addForce(this->bodies[j]);
+#pragma omp parallel for collapse(2)
+    for (int i = 0; i < this->num_bodies; i++) {
+        for (int j = 0; j < this->num_bodies; j++) {
+            if (i != j) {
+                this->bodies[i].addForce(this->bodies[j]);
+            }
         }
-      }
     }
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < this->num_bodies; i++) {
-      this->bodies[i].update(UPDATE_STEP);
+        this->bodies[i].update(UPDATE_STEP);
     }
 }
 

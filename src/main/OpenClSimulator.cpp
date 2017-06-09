@@ -5,6 +5,7 @@
 #include "OpenClSimulator.h"
 #include "../includes/cl.hpp"
 #include "Util.h"
+#include "SignalHandler.h"
 
 OpenClSimulator::OpenClSimulator(const std::string &input_file_path, const std::string &output_file_path, int simulation_steps)
         : Simulator(input_file_path, output_file_path, simulation_steps) {
@@ -46,7 +47,7 @@ void OpenClSimulator::scaleBodies() {
     }
 }
 
-void OpenClSimulator::startSimulation() {
+int OpenClSimulator::startSimulation() {
 
     //get all platforms (drivers)
     std::vector<cl::Platform> all_platforms;
@@ -108,21 +109,45 @@ void OpenClSimulator::startSimulation() {
     const float update = Simulator::UPDATE_STEP;
     kernel_add.setArg(4,update);
 
-    for (int i = 0; i < simulation_steps; ++i) {
+    int iret = EXIT_SUCCESS;
 
-        queue.enqueueNDRangeKernel(kernel_add,cl::NullRange,cl::NDRange(num_bodies),cl::NullRange);
-        queue.finish();
-
-        queue.enqueueReadBuffer(buffer_masses,CL_TRUE,0,sizeof(float)*num_bodies,masses);
-        queue.enqueueReadBuffer(buffer_positions,CL_TRUE,0,sizeof(float)*num_bodies*2,positions);
-        queue.enqueueReadBuffer(buffer_velocities,CL_TRUE,0,sizeof(float)*num_bodies*2,velocities);
-
-        for (int j = 0; j < num_bodies; ++j) {
-            this->output_file << positions[2*j+0]/RADIUS_UNIVERSE << "\t" << positions[2*j+1]/RADIUS_UNIVERSE << "\t" << masses[j] << "\t";
+    if (simulation_steps != -1) {
+        for (int i = 0; i < simulation_steps; ++i) {
+            runStep(buffer_masses, buffer_positions, buffer_velocities, queue, kernel_add);
         }
-        this->output_file << "\n";
+    } else {
+        try {
+            SignalHandler signalHandler;
+            signalHandler.setupSignalHandlers();
+
+            while (!signalHandler.gotExitSignal()) {
+                runStep(buffer_masses, buffer_positions, buffer_velocities, queue, kernel_add);
+            }
+
+        } catch (SignalException &e) {
+            std::cerr << e.what();
+            iret = EXIT_FAILURE;
+        }
     }
 
     this->output_file.close();
+    return iret;
+}
+
+void OpenClSimulator::runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_positions,
+                              cl::Buffer &buffer_velocities, cl::CommandQueue &queue,
+                              cl::Kernel &kernel_add) {
+    queue.enqueueNDRangeKernel(kernel_add, cl::NullRange, cl::NDRange(this->num_bodies), cl::NullRange);
+    queue.finish();
+
+    queue.enqueueReadBuffer(buffer_masses, CL_TRUE, 0, sizeof(float) * this->num_bodies, masses);
+    queue.enqueueReadBuffer(buffer_positions, CL_TRUE, 0, sizeof(float) * this->num_bodies * 2, positions);
+    queue.enqueueReadBuffer(buffer_velocities, CL_TRUE, 0, sizeof(float) * this->num_bodies * 2, velocities);
+
+    for (int j = 0; j < this->num_bodies; ++j) {
+            this->output_file << positions[2 * j + 0] / RADIUS_UNIVERSE << "\t" << positions[2 * j + 1] /
+                                                                                   RADIUS_UNIVERSE << "\t" << masses[j] << "\t";
+        }
+    this->output_file << "\n";
 }
 
