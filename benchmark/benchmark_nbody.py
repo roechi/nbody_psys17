@@ -6,6 +6,7 @@ import time
 # TODO: Check if scripts for generating bodies and executable is present
 # TODO: Build project when executable is not present
 # TODO: Allow script to be exited with CTRL-C (not working because of os.system subcalls)
+# TODO: Set maximum number of body via parameter
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -20,7 +21,7 @@ log_file='benchmark_nbody_{}.log'.format(current_milli_time())
 omp_times=[]
 ocl_times=[]
 
-num_bodies = [pow(2,x) for x in range(1,14)]
+num_bodies = [pow(2,x) for x in range(1,11)]
 simulation_steps = 1000;
 
 f = open(log_file, 'w');
