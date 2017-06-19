@@ -15,13 +15,17 @@ content = [x.strip() for x in content]
 
 omp_times=[]
 ocl_times=[]
+omp_stdevs=[]
+ocl_stdevs=[]
 num_bodies=[]
 
 for line in content:
     vals = line.split(';')
     num_bodies += [int(vals[0])]
-    omp_times += [int(vals[1])]
-    ocl_times += [int(vals[2])]
+    omp_times += [numpy.mean(eval(vals[1]))]
+    ocl_times += [numpy.mean(eval(vals[2]))]
+    omp_stdevs += [numpy.std(eval(vals[1]))]
+    ocl_stdevs += [numpy.std(eval(vals[2]))]
 
 
 N=len(content)
@@ -29,8 +33,8 @@ ind = [x for x in numpy.arange(N)]
 # ind = num_bodies
 fig = plt.figure(figsize=(14, 7))
 ax = plt.subplot()
-line1 = ax.plot(ind, omp_times, label = 'OMP')
-line2 = ax.plot(ind, ocl_times, label = 'OpenCL')
+line1 = ax.errorbar(ind, omp_times, yerr=omp_stdevs, label = 'OMP')
+line2 = ax.errorbar(ind, ocl_times, yerr=ocl_stdevs, label = 'OpenCL')
 ax.legend(loc='upper left')
 # ax.set_xlim([0, N+1])
 plt.xticks(ind, num_bodies)

@@ -13,12 +13,14 @@ with open(sys.argv[1]) as file:
 content = [line.strip() for line in content]
 
 omp_runtimes = []
+omp_stdevs = []
 num_omp_threads = []
 
 for line in content:
     values = line.split(';')
     num_omp_threads += [int(values[0])]
-    omp_runtimes += [int(values[1])]
+    omp_runtimes += [numpy.mean(eval(values[1]))]
+    omp_stdevs += [numpy.std(eval(values[1]))]
 
 fig = plot.figure(figsize=(14, 7))
 
@@ -26,7 +28,7 @@ max_threads = len(num_omp_threads)
 
 ax = plot.subplot()
 ax.set_xlim(num_omp_threads[0], num_omp_threads[max_threads - 1])
-line1 = ax.plot(num_omp_threads, omp_runtimes, label = 'OMP')
+line1 = ax.errorbar(num_omp_threads, omp_runtimes, yerr=omp_stdevs, label = 'OMP')
 plot.xlabel('number of OMP threads')
 plot.ylabel('simulation speed (ms)')
 plot.title('OMP speedup for increased number of threads')

@@ -14,6 +14,7 @@ log_file = "benchmark_nbody_{}.log".format(current_millies_time())
 num_bodies = 100
 simulation_steps = 1000
 num_threads = 4
+num_repeats = 8
 
 results_file = open(log_file, 'w')
 
@@ -25,6 +26,7 @@ generate_bodies_call = '{} {} {}'.format(
 os.system(generate_bodies_call)
 
 for curr_num_threads in range(1, 17):
+    omp_elapsed = []
     simulation_call = 'OMP_NUM_THREADS={} {} {} {} {} {}'.format(
         curr_num_threads,
         path_to_simulation_exe,
@@ -36,9 +38,10 @@ for curr_num_threads in range(1, 17):
 
     print "built call:\n" + simulation_call + "\n"
 
-    before = current_millies_time()
-    os.system(simulation_call)
-    omp_elapsed = current_millies_time() - before
+    for i in range(num_repeats):
+        before = current_millies_time()
+        os.system(simulation_call)
+        omp_elapsed += [current_millies_time() - before]
 
     results_file.write('{};{}\n'.format(curr_num_threads, omp_elapsed))
     results_file.flush()
