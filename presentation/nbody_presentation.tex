@@ -67,9 +67,22 @@
 \section{Problemstellung}
 \begin{frame}
 \begin{itemize}
-  \item Das was im Projekt-PDF drinsteht
+  \item Interaktion von $N$ Körpern im Raum
+  \item Gegenseitige Anziehung durch Gravitation
+  \item Simulation der Bewegung
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
+\begin{itemize}
+  \item Trägheitsprinzip
+  \item Aktionsprinzip
+  \item Wechselwirkungsprinzip
+  \item Superpositionsprinzip
+\end{itemize}
+\end{frame}
+
 
 \section{Algorithmus}
 \begin{frame}
@@ -92,7 +105,7 @@
    \For{each body $a$} 
       \State $f_a \gets 0$ \Comment{Reset force for $a$}
       \For{each body $b \neq a$}
-        \State $f_a \gets f_a + F(a,b)$ \Comment{Accumulate forces}
+        \State $f_a \gets f_a + \vec{F}^{\,}_{b\rightarrow a}$ \Comment{Accumulate forces}
       \EndFor
    \EndFor
    \For{each body $a$} 
