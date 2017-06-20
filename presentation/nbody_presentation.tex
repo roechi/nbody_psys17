@@ -50,7 +50,8 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{ wasysym }
-
+\usepackage{algorithm}% http://ctan.org/pkg/algorithms
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
 
 \begin{document}
 \title{N-Körper Simulation}
@@ -72,9 +73,37 @@
 
 \section{Algorithmus}
 \begin{frame}
-\begin{itemize}
-  \item Der Algorithmus 
-\end{itemize}
+\begin{center}
+\begin{huge}
+  \begin{align*}
+    \vec{a}^{\,}_i = \gamma \sum\limits_{j=1}^N \frac{m_j  \vec{r}^{\,}_{ij}}{(|| \vec{r}^{\,}_{ij} ||^2 + \epsilon^2)^{\frac{3}{2}}}
+  \end{align*}  
+\end{huge}
+\end{center}
+\end{frame}
+
+\begin{frame}
+
+
+\begin{algorithm}[H]
+\caption{Update body positions}
+\begin{algorithmic}[1]
+\Procedure{UpdateStep}{}
+   \For{each body $a$} 
+      \State $f_a \gets 0$ \Comment{Reset force for $a$}
+      \For{each body $b \neq a$}
+        \State $f_a \gets f_a + F(a,b)$ \Comment{Accumulate forces}
+      \EndFor
+   \EndFor
+   \For{each body $a$} 
+      \State $v_a \gets v_a + \Delta * f_a$ \Comment{Update velocity}
+      \State $r_a \gets r_a + \Delta * v_a$ \Comment{Update position}
+   \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
 \end{frame}
 
 \section{Implementierung}
