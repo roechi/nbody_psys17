@@ -123,8 +123,15 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 
 \subsection{OMP}
 \begin{frame}
+
+\small{\texttt{Q.enqueueNDRangeKernel(K,NullRange,NDRange(1024),NDRange(128));}}
 \begin{itemize}
-  \item OMP Zeugs
+  \item Offset
+  \item Global Size
+  \item Local Size
+  \item The global size (GSZ) is the total number of work-items (WI)
+  \item The local size (LSZ) is the number of work-items per work-group (WI/WG)
+  \item The number of work-groups is the global size / local size, or GSZ/LSZ, or WG
 \end{itemize}
 \end{frame}
 

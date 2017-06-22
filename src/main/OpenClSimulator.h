@@ -13,6 +13,7 @@ class OpenClSimulator : public Simulator {
 public:
     OpenClSimulator(const std::string &input_file_path, const std::string &output_file_path);
     OpenClSimulator(const std::string &input_file_path);
+    void setWorkGroupSize(uint work_group_size);
     int startSimulation(int simulation_steps);
     void initializeBodies();
     void scaleBodies();
@@ -26,6 +27,8 @@ private:
     float* positions;
     float* velocities;
     float* forces;
+
+    uint work_group_size = 3;
 
     void runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_positions, cl::Buffer &buffer_velocities,
                  cl::CommandQueue &queue, cl::Kernel &kernel_add);

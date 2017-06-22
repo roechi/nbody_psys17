@@ -2,6 +2,7 @@
 // Created by Jonas Jaszkowic on 08.06.17.
 //
 
+#include <assert.h>
 #include "OpenClSimulator.h"
 #include "../includes/cl.hpp"
 #include "Util.h"
@@ -25,6 +26,7 @@ void OpenClSimulator::initializeBodies() {
     ConfigParser *parser = new ConfigParser();
     int numberOfLines = parser->getNumberOfLines(this->input_file_path);
     this->num_bodies = numberOfLines;
+    this->work_group_size = 1; // Default: Maximum parallelization
 
     masses = new float[this->num_bodies];
     positions = new float[this->num_bodies * 2];
@@ -48,6 +50,7 @@ void OpenClSimulator::scaleBodies() {
 }
 
 int OpenClSimulator::startSimulation(int simulation_steps) {
+    assert(this->num_bodies % work_group_size == 0);
 
     //get all platforms (drivers)
     std::vector<cl::Platform> all_platforms;
@@ -57,7 +60,7 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
         exit(1);
     }
     cl::Platform default_platform = all_platforms[0];
-    std::cerr << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
+//    std::cerr << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
 
     //get default device of the default platform
     std::vector<cl::Device> all_devices;
@@ -67,16 +70,13 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
         exit(1);
     }
     cl::Device default_device = all_devices[0];
-    std::cerr << "Using device: " << default_device.getInfo<CL_DEVICE_NAME>() << "\n";
+//    std::cerr << "Using device: " << default_device.getInfo<CL_DEVICE_NAME>() << "\n";
 
 
     cl::Context context(default_device);
 
     cl::Program::Sources sources;
-
-    // kernel calculates for each element C=A+B
     std::string kernel_code = Util::read_file_contents("../kernel/core.cl");
-
     sources.push_back({kernel_code.c_str(), kernel_code.length()});
 
     cl::Program program(context, sources);
@@ -90,6 +90,7 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
     cl::Buffer buffer_masses(context, CL_MEM_READ_WRITE, sizeof(float) * num_bodies);
     cl::Buffer buffer_positions(context, CL_MEM_READ_WRITE, sizeof(float) * num_bodies * 2);
     cl::Buffer buffer_velocities(context, CL_MEM_READ_WRITE, sizeof(float) * num_bodies * 2);
+    cl::Buffer buffer_forces(context, CL_MEM_READ_WRITE, sizeof(float) * num_bodies * 2 );
 
     //create queue to which we will push commands for the device.
     cl::CommandQueue queue(context, default_device);
@@ -98,16 +99,19 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
     queue.enqueueWriteBuffer(buffer_masses, CL_TRUE, 0, sizeof(float) * num_bodies, masses);
     queue.enqueueWriteBuffer(buffer_positions, CL_TRUE, 0, sizeof(float) * num_bodies * 2, positions);
     queue.enqueueWriteBuffer(buffer_velocities, CL_TRUE, 0, sizeof(float) * num_bodies * 2, velocities);
-
+    queue.enqueueWriteBuffer(buffer_forces,CL_TRUE,0,sizeof(float) * num_bodies * 2, forces);
 
     //run the kernel
+    const float update = Simulator::UPDATE_STEP;
     cl::Kernel kernel_add = cl::Kernel(program, "nbody_move");
     kernel_add.setArg(0, buffer_masses);
     kernel_add.setArg(1, buffer_positions);
     kernel_add.setArg(2, buffer_velocities);
-    kernel_add.setArg(3, num_bodies);
-    const float update = Simulator::UPDATE_STEP;
-    kernel_add.setArg(4, update);
+    kernel_add.setArg(3, buffer_forces);
+    kernel_add.setArg(4, num_bodies);
+    kernel_add.setArg(5, update);
+    kernel_add.setArg(6, work_group_size);
+//    fprintf(stderr, "work_group_size=%d", work_group_size);
 
     int iret = EXIT_SUCCESS;
 
@@ -140,7 +144,10 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
 void OpenClSimulator::runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_positions,
                               cl::Buffer &buffer_velocities, cl::CommandQueue &queue,
                               cl::Kernel &kernel_add) {
-    queue.enqueueNDRangeKernel(kernel_add, cl::NullRange, cl::NDRange(this->num_bodies), cl::NullRange);
+    uint global_size = (uint)this->num_bodies / this->work_group_size;
+//    fprintf(stderr, "global_size=%i\n",global_size);
+//    fprintf(stderr, "local_size=%i\n",work_group_size);
+    queue.enqueueNDRangeKernel(kernel_add, cl::NullRange, cl::NDRange(global_size), cl::NDRange(work_group_size));
     queue.finish();
 
     queue.enqueueReadBuffer(buffer_masses, CL_TRUE, 0, sizeof(float) * this->num_bodies, masses);
@@ -164,5 +171,9 @@ void OpenClSimulator::runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_posi
     } else if (this->mode == Mode::CONSOLE){
         std::cout << "\n";
     }
+}
+
+void OpenClSimulator::setWorkGroupSize(uint work_group_size) {
+    this->work_group_size = work_group_size;
 }
 

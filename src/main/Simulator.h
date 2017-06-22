@@ -48,13 +48,13 @@ public:
      * This allows us to use float instead of float because the values will most likely stay in the float scale
      * This is needed because OpenCL kernels do not support float values (depending on hardware)
      */
-    static constexpr double RADIUS_UNIVERSE = 3.0;
-    static constexpr double SOLAR_MASS = 1.0;
-    static constexpr double GRAVITATIONAL_CONSTANT = 39.5;
-    static constexpr double UPDATE_STEP = 1.0 / 365.25; // Update step 1 day
-    static constexpr double MASS_SCALE = 1.98892e+30; // 1 Solar Mass in kg
-    static constexpr double LENGTH_SCALE =  149597870700; // 1 AU in m
-    static constexpr double TIME_SCALE = 86400 * 365.25; // 1 year in seconds
+    static constexpr float RADIUS_UNIVERSE = 3.0f;
+    static constexpr float SOLAR_MASS = 1.0f;
+    static constexpr float GRAVITATIONAL_CONSTANT = 39.5f;
+    static constexpr float UPDATE_STEP = 1.0f / 365.25f; // Update step 1 day
+    static constexpr float MASS_SCALE = 1.98892e+30; // 1 Solar Mass in kg
+    static constexpr float LENGTH_SCALE =  149597870700.0f; // 1 AU in m
+    static constexpr float TIME_SCALE = 86400.0f * 365.25f; // 1 year in seconds
 
 protected:
 
@@ -73,22 +73,22 @@ protected:
     std::string input_file_path;
     std::ofstream output_file;
 
-    double getRandom() {
-        double r = ((double) rand() / (RAND_MAX));
+    float getRandom() {
+        float r = ((float) rand() / (RAND_MAX));
         return r;
     }
 
-    double circularVelocity(double rx, double ry) {
-        double r2=sqrt(rx*rx+ry*ry);
-        double numerator=(GRAVITATIONAL_CONSTANT)*1e6*SOLAR_MASS;
+    float circularVelocity(float rx, float ry) {
+        float r2=sqrt(rx*rx+ry*ry);
+        float numerator=(GRAVITATIONAL_CONSTANT)*1e6f*SOLAR_MASS;
         return sqrt(numerator/r2);
     }
 
-    double signum(double val) {
+    float signum(float val) {
         return (val > 0) ? 1 : ((val < 0) ? -1 : 0);
     }
 
-    double exp(double lambda) {
+    float exp(float lambda) {
         return -log(1 - getRandom()) / lambda;
     }
 
