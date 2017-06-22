@@ -49,6 +49,7 @@
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{textcomp}
 \usepackage{ wasysym }
 \usepackage{algorithm}% http://ctan.org/pkg/algorithms
 \usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
@@ -90,7 +91,7 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 \begin{huge}
   \begin{align*}
     \vec{a}^{\,}_i = \gamma \sum\limits_{j=1}^N \frac{m_j  \vec{r}^{\,}_{ij}}{(|| \vec{r}^{\,}_{ij} ||^2 + \epsilon^2)^{\frac{3}{2}}}
-  \end{align*}  
+  \end{align*}
 \end{huge}
 \end{center}
 \end{frame}
@@ -102,13 +103,13 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 \caption{Update body positions}
 \begin{algorithmic}[1]
 \Procedure{UpdateStep}{}
-   \For{each body $a$} 
+   \For{each body $a$}
       \State $f_a \gets 0$ \Comment{Reset force for $a$}
       \For{each body $b \neq a$}
         \State $f_a \gets f_a + \vec{F}^{\,}_{b\rightarrow a}$ \Comment{Accumulate forces}
       \EndFor
    \EndFor
-   \For{each body $a$} 
+   \For{each body $a$}
       \State $v_a \gets v_a + \Delta * f_a$ \Comment{Update velocity}
       \State $r_a \gets r_a + \Delta * v_a$ \Comment{Update position}
    \EndFor
@@ -157,10 +158,29 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 \end{frame}
 
 \section{Benchmarks}
+\subsection{Hardware}
 \begin{frame}
 \begin{itemize}
-  \item Die ganzen Benchmarks
+  \item 2,4 GHz Core i5
+  \item 2 physische Kerne mit Hyper Threading $\,\to\,$ 4 Kerne
+  \item Intel Iris mit 1536 MB VRAM
+  \item OSX 10.12.4
 \end{itemize}
+\end{frame}
+
+\subsection{Open MP}
+\begin{frame}
+\includegraphics[width=13cm]{img/omp.png}
+\end{frame}
+
+\subsection{Open CL}
+\begin{frame}
+\includegraphics[width=13cm]{img/ocl.png}
+\end{frame}
+
+\subsection{Vergleich OMP \& OCL}
+\begin{frame}
+\includegraphics[width=13cm]{img/omp_and_ocl.png}
 \end{frame}
 
 \end{document}
