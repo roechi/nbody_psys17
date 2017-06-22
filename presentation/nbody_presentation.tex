@@ -122,7 +122,7 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 
 \section{Implementierung}
 
-\subsection{OMP}
+\subsection{OpenCL}
 \begin{frame}
 
 \small{\texttt{Q.enqueueNDRangeKernel(K,NullRange,NDRange(1024),NDRange(128));}}
@@ -136,16 +136,17 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 \end{itemize}
 \end{frame}
 
-\subsection{OpenCL}
+\subsection{OpenMP}
 \begin{frame}
 \begin{itemize}
-  \item OpenCL Zeugs
+  \item OpenMP Zeugs
 \end{itemize}
 \end{frame}
 
 \subsection{Softwaredesign}
 \begin{frame}
 \begin{itemize}
+  %Ich werde hier ein Diagramm mit Plant-UML machen%
   \item Softwaredesign Zeugs
 \end{itemize}
 \end{frame}
@@ -153,7 +154,11 @@ Grundlage: \textbf{Newton'sche Gesetze der Bewegung}\vspace{1cm}
 \subsection{Visualisierung}
 \begin{frame}
 \begin{itemize}
-  \item Visualisierung Zeugs
+  \item Visualisierung mit Processing-App
+  \item Simulator loggt Körperkoordinaten
+  \item Programm-Output wird über Pipe in Visualisierung umgeleitet
+  \item $\,\to\,$ Visualisierung in Echtzeit
+  \item alternativ auch loggen auf Platte und Replay der Simulation aus Log-File
 \end{itemize}
 \end{frame}
 
