@@ -1,9 +1,17 @@
 #!/usr/bin/python
 import os
 import time
+import sys
+
+if (len(sys.argv) != 4):
+    print "Missing arguments.\nUsage: ./benchmark_nbody_ocl.py [num_bodies] [simulation_steps] [repeats]"
+    sys.exit()
+
+num_bodies = int(sys.argv[1])
+simulation_steps = int(sys.argv[2])
+num_repeats = int(sys.argv[3])
 
 # Benchmarks the OpenCL implementation
-
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 path_to_body_generation = "../resources/generateRandomGalaxy.py"
@@ -14,13 +22,12 @@ print 'Benchmarking OpenCL implementation with varying work group sizes.\n'
 tmp_file="tmp.txt"
 out_file="tmp_out.txt"
 log_file='benchmark_nbody_{}.log'.format(current_milli_time())
-num_repeats = 8
 
-work_group_sizes = [pow(2,x) for x in range(1,7)]
-num_bodies = 128
-simulation_steps = 1000;
+work_group_sizes = [pow(2,x) for x in range(0,10)]
+
 
 f = open(log_file, 'w');
+f.write('{}\n{}\n'.format(num_bodies,simulation_steps))
 
 generate_bodies_call='{} {} {}'.format(path_to_body_generation, num_bodies,tmp_file)
 os.system(generate_bodies_call)
@@ -48,4 +55,4 @@ os.remove(tmp_file)
 os.remove(out_file)
 print 'Cleaned up temporary files.\n'
 
-# os.system('./plot_benchmark.py {}'.format(log_file))
+os.system('./plot_benchmark_ocl.py {}'.format(log_file))
