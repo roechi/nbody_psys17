@@ -62,3 +62,5 @@ dkms.conf
 .idea
 
 /cmake-build-debug/
+**/CMakeFiles/*
+**/*.log
