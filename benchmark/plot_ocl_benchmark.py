@@ -43,7 +43,7 @@ line2 = ax.errorbar(ind, ocl_times, yerr=ocl_stdevs, label = 'OpenCL')
 ax.legend(loc='upper left')
 # ax.set_xlim([0, N+1])
 plt.xticks(ind, num_threads)
-plt.xlabel('Number of "Threads"')
+plt.xlabel('Work group size')
 plt.ylabel('Simulation speed (ms)')
 plt.title('OpenCL simulation speed with {} bodies and {} steps'.format(num_bodies, simulation_steps))
 
