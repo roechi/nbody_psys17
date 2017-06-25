@@ -15,12 +15,23 @@ content = [line.strip() for line in content]
 omp_runtimes = []
 omp_stdevs = []
 num_omp_threads = []
+num_bodies = 0
+simulation_steps = 0
 
+line_idx = 0
 for line in content:
-    values = line.split(';')
-    num_omp_threads += [int(values[0])]
-    omp_runtimes += [numpy.mean(eval(values[1]))]
-    omp_stdevs += [numpy.std(eval(values[1]))]
+    if line_idx == 0:
+        num_bodies = int(line)
+    elif line_idx == 1:
+        simulation_steps = int(line)
+    elif line_idx == 2:
+        repeats = int(line)
+    else:
+        values = line.split(';')
+        num_omp_threads += [int(values[0])]
+        omp_runtimes += [numpy.mean(eval(values[1]))]
+        omp_stdevs += [numpy.std(eval(values[1]))]
+    line_idx = line_idx + 1
 
 fig = plot.figure(figsize=(14, 7))
 
@@ -31,7 +42,7 @@ ax.set_xlim(num_omp_threads[0], num_omp_threads[max_threads - 1])
 line1 = ax.errorbar(num_omp_threads, omp_runtimes, yerr=omp_stdevs, label = 'OMP')
 plot.xlabel('number of OMP threads')
 plot.ylabel('simulation speed (ms)')
-plot.title('OMP speedup for increased number of threads')
+plot.title('OpenMP simulation speed with {} bodies and {} steps for {} runs'.format(num_bodies, simulation_steps, repeats))
 
 # Render, Control + C in command line to close the window
 plot.draw()

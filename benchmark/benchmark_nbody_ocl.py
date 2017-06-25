@@ -27,7 +27,7 @@ work_group_sizes = [pow(2,x) for x in range(0,10)]
 
 
 f = open(log_file, 'w');
-f.write('{}\n{}\n'.format(num_bodies,simulation_steps))
+f.write('{}\n{}\n{}\n'.format(num_bodies,simulation_steps,num_repeats))
 
 generate_bodies_call='{} {} {}'.format(path_to_body_generation, num_bodies,tmp_file)
 os.system(generate_bodies_call)

@@ -18,6 +18,7 @@ ocl_stdevs=[]
 num_threads=[]
 num_bodies = 0
 simulation_steps = 0
+repeats = 0
 
 line_idx = 0
 for line in content:
@@ -25,6 +26,8 @@ for line in content:
         num_bodies = int(line)
     elif line_idx == 1:
         simulation_steps = int(line)
+    elif line_idx == 2:
+        repeats = int(line)
     else:
         vals = line.split(';')
         num_threads += [int(vals[0])]
@@ -34,7 +37,7 @@ for line in content:
 
 
 
-N=len(content)-2
+N=len(content)-3
 ind = [x for x in numpy.arange(N)]
 # ind = num_threads
 fig = plt.figure(figsize=(14, 7))
@@ -45,7 +48,7 @@ ax.legend(loc='upper left')
 plt.xticks(ind, num_threads)
 plt.xlabel('Number of "Threads"')
 plt.ylabel('Simulation speed (ms)')
-plt.title('OpenCL simulation speed with {} bodies and {} steps'.format(num_bodies, simulation_steps))
+plt.title('OpenCL simulation speed with {} bodies and {} steps for {} runs'.format(num_bodies, simulation_steps, repeats))
 
 # Render, Control + C in command line to close the window
 plt.draw()

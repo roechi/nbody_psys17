@@ -17,6 +17,7 @@ num_threads = 4
 num_repeats = 8
 
 results_file = open(log_file, 'w')
+results_file.write('{}\n{}\n{}\n'.format(num_bodies,simulation_steps,num_repeats))
 
 generate_bodies_call = '{} {} {}'.format(
     path_to_body_generation,
