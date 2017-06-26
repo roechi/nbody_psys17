@@ -1,0 +1,58 @@
+@startuml
+
+Simulator <|-- OmpSimulator
+Simulator <|-- OpenCLSimulator
+OmpSimulator *-- SignalHandler
+OpenCLSimulator *-- SignalHandler
+
+OmpSimulator *-- Body
+OpenCLSimulator *-- Body
+
+OmpSimulator *-- Util
+OpenCLSimulator *-- Util
+
+
+class Simulator {
+  +Simulator(string input_file_path, string output_file_path)
+  +Simulator(string& input_file_path)
+  +{abstract} int startSimulation(int simulation_steps)
+  #{abstract} void initializeBodies()
+}
+note left: Strategy Pattern
+
+class OmpSimulator {
+  +OmpSimulator(string input_file_path, string output_file_path)
+  +OmpSimulator(string& input_file_path)
+  +{abstract} int startSimulation(int simulation_steps)
+  #{abstract} void initializeBodies()
+}
+
+class OpenCLSimulator {
+  +OpenCLSimulator(string input_file_path, string output_file_path)
+  +OpenCLSimulator(string& input_file_path)
+  +{abstract} int startSimulation(int simulation_steps)
+  #{abstract} void initializeBodies()
+}
+
+class Util {
+  +{static} string read_file_contents(std::string filename)
+}
+note bottom: read setup from file
+
+class Body {
+  +Body(double m, double rx, double ry, double vx, double vy)
+  +Body(double m, double rx, double ry, double vx, double vy, double fx, double fy)
+  +void update(double step)
+  +double distanceTo(Body b)
+  +void resetForce()
+  +void addForce(Body b)
+}
+
+class SignalHandler {
+  +{static} bool mbGotExitSignal()
+  +{static} void setExitSignal(bool _bExitSignal)
+  +void setupSignalHandlers()
+}
+note bottom: handle SIGTERM properly
+
+@enduml
