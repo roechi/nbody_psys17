@@ -1,8 +1,12 @@
 
 BufferedReader reader;
 String line;
-int steps = 0; 
-String path = "/Users/leto/repos/nbody_psys17/cmake-build-debug/out4.txt";
+int steps = 0;
+String path = "/Users/leto/repos/nbody_psys17/cmake-build-debug/out1.txt";
+//String path = "/Users/leto/repos/nbody_psys17/cmake-build-debug/out7.txt";
+//String path = "/Users/leto/repos/nbody_psys17/cmake-build-debug/out_random_1.txt";
+
+
 float scale = 0.1;
 
 void setup() {
@@ -41,8 +45,8 @@ void draw() {
     for(int i = 0; i < numBodies; i++) {
      //delay(500);
       // each step is a day
-      float x = float(pieces[3*i+0] * scale) * (width /2) + (width/2);
-      float y = float(pieces[3*i+1] * scale) * (height/2) + (height/2);
+      float x = (Float.valueOf(pieces[3*i+0]) * scale) * (width /2) + (width/2);
+      float y = (Float.valueOf(pieces[3*i+1]) * scale) * (height/2) + (height/2);
  
       fill(255,255,255);
       stroke(255,255,255);

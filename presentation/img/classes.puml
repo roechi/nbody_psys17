@@ -12,7 +12,7 @@ OmpSimulator *-- Util
 OpenCLSimulator *-- Util
 
 
-class Simulator {
+abstract class Simulator {
   #int num_bodies
   #string input_file_path
   +Simulator(string input_file_path, string output_file_path)
@@ -22,7 +22,7 @@ class Simulator {
 }
 note left: Strategy Pattern
 
-abstract class OmpSimulator {
+class OmpSimulator {
   +OmpSimulator(string input_file_path, string output_file_path)
   +OmpSimulator(string& input_file_path)
   +{abstract} int startSimulation(int simulation_steps)

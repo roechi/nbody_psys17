@@ -189,30 +189,30 @@
 \begin{frame}
 \begin{itemize}
   \item konfigurative Initialisierung per Text-File mit Startwerten:
-  \includegraphics[width=7cm]{img/config_solar.png}
+  \includegraphics[width=10cm]{img/config_solar.png}
   \begin{itemize}
     \item Konfiguration beinhaltet nur Starteigenschafte für Körper
     \item Wahl des Simulators, Iterationszahl und Logmodus als Programm-Parameter
   \end{itemize}
-
-  \item Simulator loggt Körperkoordinaten in File oder nach stdout
-  \item Visualisierung mit Processing-App ließt über Log-Indirektion über Pipe
-  \begin{itemize}
-    \item $\,\to\,$ Visualisierung in Echtzeit
-  \end{itemize}
-  \item alternativ auch Loggen auf Platte und Replay der Simulation aus Log-File
 \end{itemize}
 \end{frame}
 
 \subsection{Benchmarks}
 \begin{frame}
 \begin{itemize}
+  \item Simulator loggt Körperkoordinaten in File oder nach stdout
+  \item Visualisierung mit Processing-App ließt über Log-Indirektion über Pipe
+  \begin{itemize}
+    \item $\,\to\,$ Visualisierung in Echtzeit
+  \end{itemize}
+  \item alternativ auch Loggen auf Platte und Replay der Simulation aus Log-File
   \item Benchmark-Scaffolding mit Python-Skripten
   \begin{itemize}
     \item gutes String- und File-Parsing
     \item einfache Interaktion mit System-Layer (i.e. Anwendung mit dynamischen Parametern starten)
     \item Verfügbarkeit von MatPlotLib
   \end{itemize}
+  \item Tests mit GTest (Google)
 \end{itemize}
 \end{frame}
 
