@@ -131,7 +131,7 @@
 
 \end{frame}
 
-\section{Implementierung}
+\section{Implementierung I}
 
 \subsection{OpenCL}
 \begin{frame}
@@ -150,22 +150,6 @@
   \item Automatisierte Parallelisierung durch \textbf{Pragmas}
   \item z.B. \texttt{\#pragma omp parallel for collapse(2) \{...\}}
   \item Limitiert durch die Anzahl an CPU Kernen
-\end{itemize}
-\end{frame}
-
-\subsection{Softwaredesign}
-\begin{frame}
-\includegraphics[width=12cm]{img/classes.png}
-\end{frame}
-
-\subsection{Visualisierung}
-\begin{frame}
-\begin{itemize}
-  \item Visualisierung mit Processing-App
-  \item Simulator loggt Körperkoordinaten
-  \item Programm-Output wird über Pipe in Visualisierung umgeleitet
-  \item $\,\to\,$ Visualisierung in Echtzeit
-  \item alternativ auch loggen auf Platte und Replay der Simulation aus Log-File
 \end{itemize}
 \end{frame}
 
@@ -193,6 +177,55 @@
 \subsection{Vergleich OMP \& OCL}
 \begin{frame}
 \includegraphics[width=13cm]{img/fig_omp_and_ocl.png}
+\end{frame}
+
+\section{Implementierung II}
+\subsection{Softwaredesign}
+\begin{frame}
+\includegraphics[width=12cm]{img/classes.png}
+\end{frame}
+
+\subsection{Visualisierung}
+\begin{frame}
+\begin{itemize}
+  \item konfigurative Initialisierung per Text-File mit Startwerten:
+  \includegraphics[width=7cm]{img/config_solar.png}
+  \begin{itemize}
+    \item Konfiguration beinhaltet nur Starteigenschafte für Körper
+    \item Wahl des Simulators, Iterationszahl und Logmodus als Programm-Parameter
+  \end{itemize}
+
+  \item Simulator loggt Körperkoordinaten in File oder nach stdout
+  \item Visualisierung mit Processing-App ließt über Log-Indirektion über Pipe
+  \begin{itemize}
+    \item $\,\to\,$ Visualisierung in Echtzeit
+  \end{itemize}
+  \item alternativ auch Loggen auf Platte und Replay der Simulation aus Log-File
+\end{itemize}
+\end{frame}
+
+\subsection{Benchmarks}
+\begin{frame}
+\begin{itemize}
+  \item Benchmark-Scaffolding mit Python-Skripten
+  \begin{itemize}
+    \item gutes String- und File-Parsing
+    \item einfache Interaktion mit System-Layer (i.e. Anwendung mit dynamischen Parametern starten)
+    \item Verfügbarkeit von MatPlotLib
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Vollständigkeit des Belegs}
+\subsection{Was bleibt noch zu tun?}
+\begin{frame}
+ToDo:
+\begin{itemize}
+  \item valgrind \& helgrind
+  \item Doku schreiben
+  \item weitere Benchmarks
+  \item Test-Coverage erhöhen $\,\to\,$ Refactoring
+\end{itemize}
 \end{frame}
 
 \end{document}
