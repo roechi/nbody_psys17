@@ -13,6 +13,8 @@ OpenCLSimulator *-- Util
 
 
 class Simulator {
+  #int num_bodies
+  #string input_file_path
   +Simulator(string input_file_path, string output_file_path)
   +Simulator(string& input_file_path)
   +{abstract} int startSimulation(int simulation_steps)
@@ -20,7 +22,7 @@ class Simulator {
 }
 note left: Strategy Pattern
 
-class OmpSimulator {
+abstract class OmpSimulator {
   +OmpSimulator(string input_file_path, string output_file_path)
   +OmpSimulator(string& input_file_path)
   +{abstract} int startSimulation(int simulation_steps)
@@ -40,6 +42,13 @@ class Util {
 note bottom: read setup from file
 
 class Body {
+  #double m;
+  #double rx;
+  #double ry;
+  #double vx;
+  #double vy;
+  #double fx = 0.0;
+  #double fy = 0.0;
   +Body(double m, double rx, double ry, double vx, double vy)
   +Body(double m, double rx, double ry, double vx, double vy, double fx, double fy)
   +void update(double step)
@@ -49,8 +58,8 @@ class Body {
 }
 
 class SignalHandler {
+  #bool mbGotExitSignal;
   +{static} bool mbGotExitSignal()
-  +{static} void setExitSignal(bool _bExitSignal)
   +void setupSignalHandlers()
 }
 note bottom: handle SIGTERM properly
