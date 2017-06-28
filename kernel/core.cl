@@ -2,59 +2,50 @@ kernel void nbody_move(global float* masses,
                        global float* positions,
                        global float* velocities,
                        global float* forces,
-                       int num_bodies,
-                       float step_size,
+                       int NUM_BODIES,
+                       float STEP_SIZE,
                        int WORK_GROUP_SIZE)
 {
-//    printf("Hello, World!\n");
-//    printf("num_bodies=%i, step_size=%f, work_group_size=%i\n",num_bodies,step_size,WORK_GROUP_SIZE);
+    const float GRAVITATIONAL_CONSTANT = 39.5f;
+    const float EPS = 0.1;
+
+    // Calculate forces
     for(int n = 0; n < WORK_GROUP_SIZE; n++) {
-
-        // Values of body of interest
-        int cur_idx_1d = (get_global_id(0) * WORK_GROUP_SIZE) + n;
-        int cur_idx_2d = cur_idx_1d * 2;
-
-        float2 cur_pos = (float2)(positions[cur_idx_2d],positions[cur_idx_2d+1]);
-        float cur_mass = masses[cur_idx_1d];
-        const float GRAVITATIONAL_CONSTANT = 39.5;
-
-        // Accumulate forces from other bodies
-        float2 force = (float2)(0.0, 0.0);
-
-        for(int i = 0; i < num_bodies; i++) {
-            int idx_1d = i;
-            int idx_2d = i * 2;
-
-            if(idx_1d != cur_idx_1d) {
-                float2 pos = (float2)(positions[idx_2d],positions[idx_2d+1]);
-                float mass = masses[idx_1d];
-
-                float EPS = 0.00000000001f;      // softening parameter (just to avoid infinities)
-                float2 pos_delta = pos - cur_pos;
-                float dist = sqrt(pos_delta.x*pos_delta.x + pos_delta.y*pos_delta.y);
-                float F = (GRAVITATIONAL_CONSTANT * cur_mass * mass) / (dist*dist + EPS*EPS);
-
-                force += F * pos_delta / dist;
+        int a1d = (get_global_id(0) * WORK_GROUP_SIZE) + n;
+        int a2d = a1d * 2;
+        float a_rx = positions[a2d];
+        float a_ry = positions[a2d+1];
+        float fx = 0.0;
+        float fy = 0.0;
+        for(int i = 0; i < NUM_BODIES; i++) {
+            int b1d = i;
+            int b2d = i * 2;
+            if(b1d != a1d) {
+                float b_rx = positions[b2d];
+                float b_ry = positions[b2d+1];
+                float mass = masses[b1d];
+                float dx = b_rx - a_rx;
+                float dy = b_ry - a_ry;
+                float dist = sqrt(pow(dx,2) + pow(dy,2));
+                float F = (mass / pow(dist*dist + EPS*EPS, 1.5));
+                fx += F * dx;
+                fy += F * dy;
             }
         }
-
-        forces[cur_idx_2d] = force.x;
-        forces[cur_idx_2d+1] = force.y;
+        forces[a2d] = GRAVITATIONAL_CONSTANT * fx;
+        forces[a2d+1] = GRAVITATIONAL_CONSTANT * fy;
     }
 
-    for (int j = 0; j < WORK_GROUP_SIZE; ++j) {
-
-        // Values of body of interest
-        int cur_idx_1d = (get_global_id(0) * WORK_GROUP_SIZE) + j;
-        int cur_idx_2d = cur_idx_1d * 2;
-        float cur_mass = masses[cur_idx_1d];
-        float2 force = (float2)(forces[cur_idx_2d],forces[cur_idx_2d+1]);
-
-        // Update position
-        velocities[cur_idx_2d] += step_size * force.x / cur_mass;
-        velocities[cur_idx_2d+1] += step_size * force.y / cur_mass;
-        positions[cur_idx_2d] += step_size * velocities[cur_idx_2d];
-        positions[cur_idx_2d+1] += step_size * velocities[cur_idx_2d+1];
+    // Update positions
+    for (int a = 0; a < WORK_GROUP_SIZE; ++a) {
+        int a1d = (get_global_id(0) * WORK_GROUP_SIZE) + a;
+        int a2d = a1d * 2;
+        float fx = forces[a2d];
+        float fy = forces[a2d+1];
+        velocities[a2d] += STEP_SIZE * fx ;
+        velocities[a2d+1] += STEP_SIZE * fy;
+        positions[a2d] += STEP_SIZE * velocities[a2d];
+        positions[a2d+1] += STEP_SIZE * velocities[a2d+1];
     }
 
 }
