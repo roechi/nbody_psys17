@@ -22,9 +22,9 @@ color bodyColor = color(0,255,0,128);
 
 void setup() {
   
-  //path = readInputFilePath();
+  path = readInputFilePath();
   //path = "/Users/jaszkowic/Desktop/positions.txt";
-  path = "../resources/crazy_universe.txt";
+  //path = "../resources/crazy_universe.txt";
    //Open the file from the createWriter() example
   reader = createReader(path);
   
