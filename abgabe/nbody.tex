@@ -13,6 +13,8 @@
 \usepackage{xcolor}
 \usepackage{soul}
 \usepackage{amsmath}
+\usepackage{algorithm}% http://ctan.org/pkg/algorithms
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
 
 \definecolor{lightgray}{rgb}{0.6,0.6,0.6}
 \definecolor{darkgray}{rgb}{0.3,0.3,0.3}
@@ -52,9 +54,27 @@ In order to avoid division by zero in the distance calculation $||\vv{q_j} - \vv
 \begin{align*}
 	\vv{a_i} &= \gamma \sum\limits_{j=1}^N \frac{m_j \cdot (\vv{q_j} - \vv{q_i})}{(||\vv{q_j} - \vv{q_i}||^2 + \epsilon^2)^\frac{3}{2}}
 \end{align*}
-
+With this equation we have deducted the acceleration $\vv{a_i}$ of each body. Using infinitesimal time steps and the laws $v = a\cdot t$ and $s=v\cdot t$, we can iteratively calculate the postion of each body for every time $t$.
 
 \section{Algorithm}
+\begin{algorithm}[H]
+\caption{Update body positions}
+\begin{algorithmic}[1]
+\Procedure{UpdateStep}{}
+   \For{each body $a$}
+      \State $f_a \gets 0$ \Comment{Reset force for $a$}
+      \For{each body $b \neq a$}
+        \State $f_a \gets f_a + \vec{F}^{\,}_{b\rightarrow a}$ \Comment{Accumulate forces}
+      \EndFor
+   \EndFor
+   \For{each body $a$}
+      \State $v_a \gets v_a + \Delta * f_a$ \Comment{Update velocity}
+      \State $r_a \gets r_a + \Delta * v_a$ \Comment{Update position}
+   \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
 
 \section{Implementation}
 \subsection{Astronomical Units}
