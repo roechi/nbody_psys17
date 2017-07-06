@@ -19,6 +19,7 @@
 \newcommand{\err}[1]{$^{\textcolor{red}{#1}}$}
 \newcommand{\fl}[1]{\colorbox{lightgray!20}{\path{#1}}}
 \newcommand{\cd}[1]{\sethlcolor{darkgray} \textcolor{white}{\hl{\texttt{#1}}}}
+\newcommand*{\vv}[1]{\vec{\mkern0mu#1}}
 
 %Header und Titel
 \title{N-Body Simulation}
@@ -34,11 +35,24 @@
 \section{Introduction}
 Implementing a N-body simulation breaks down to solving the N-body problem of predicting the individual motions of a group of $n$ objects interacting with each other gravitationally. The exact solution to this problem has a time complexity of $\mathcal{O}(n^2)$ which means that it is not possible to solve it efficiently in an appropriate period of time, especially when the number of objects is large. Reducing time complexity can either be done by using approximate methods which produce a "good enough" solution or by parallelizing the algorithm on multi-core processors. For this work, we focus on the latter.
 
-\section{Two-body problem}
-
-\section{Three-body problem}
-
 \section{N-body problem}
+The N-body problem is a generalized form of the famous two-body and three-body problem which are dealing with the same question: determining the motions of two or three bodies interacting with each other gravitationally. An explicit analytical solution is known to the two-body problem, i.e. simple functions $\vv{r_1}(t)$ and $\vv{r_2}(t)$ that takes only the time $t$ as a parameter and calculates the corresponding position of both bodies given only the initial conditions. However, up to today no analytical solution in the form of $\vv{r_i}(t)$ functions has been found for the three-body problem or the n-body problem. \cite{fridgeorders} The most straight-forward methods are called \textit{direct} methods or \textit{particle-particle} methods. For these problems, a number of numerical solutions are known.
+\subsection{Definition}
+The n-body problem is given by $n$ point masses $m_i > 0$ and $n$ initial position vectors $\vv{r_i}$ for $i=1,2,...,n$ in a three-dimensional reference system $\mathbb{R}^3$, their mutual gravitational attraction being the single force acting on them. \cite{meyer2008introduction}Given these initial conditions, the task can now be stated as: \textit{Find the position vectors for each body given a time $t$.}
+\subsection{Derivation}
+Finding the body positions boils down to calculating the acceleration for each body. Using Newton' second law of motion $F = m \cdot a$ we can state that mass times acceleration of the $i$th body is equal to the sum of the forces acting on this particular body. The sum of the forces can be calculated using Newton's universal law of gravity $F = \gamma \cdot \frac{m_1m_2}{r^2}$ and the superposition principle $\vv{F_{res}} = \vv{F_1} + \vv{F_2} + ... + \vv{F_n}$. The direction of this force is given by $\vv{q_j} -\vv{q_i}~/~||\vv{q_j} - \vv{q_i}||$.
+\begin{align*}
+	m_i \cdot a_i &= F\\
+	m_i \cdot a_i &= \gamma \sum\limits_{j=1}^N \frac{m_i m_j}{||\vv{q_j} - \vv{q_i}||^2}  \\
+	\vec{a}^{\,}_i \cdot m_i &= \gamma \sum\limits_{j=1}^N \frac{m_i m_j}{||\vv{q_j} - \vv{q_i}||^2} \cdot \frac{(\vv{q_j} - \vv{q_i})}{||\vv{q_j} - \vv{q_i}||} \\
+	\vv{a_i} &= \gamma \sum\limits_{j=1}^N \frac{m_j \cdot (\vv{q_j} - \vv{q_i})}{||\vv{q_j} - \vv{q_i}||^3}
+\end{align*}\\
+In order to avoid division by zero in the distance calculation $||\vv{q_j} - \vv{q_i}||^3$ we introduce a softening factor $\epsilon$:
+
+\begin{align*}
+	\vv{a_i} &= \gamma \sum\limits_{j=1}^N \frac{m_j \cdot (\vv{q_j} - \vv{q_i})}{(||\vv{q_j} - \vv{q_i}||^2 + \epsilon^2)^\frac{3}{2}}
+\end{align*}
+
 
 \section{Algorithm}
 
@@ -72,6 +86,6 @@ With these values we can scale the gravitational constant accordingly:
 
 
 
-% \bibliography{bibliography}{}
-% \bibliographystyle{plainurl}
+\bibliography{bibliography}{}
+\bibliographystyle{plainurl}
 \end{document}
