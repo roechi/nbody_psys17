@@ -43,11 +43,6 @@ morekeywords={pragma},
   stringstyle=\color{red}
   }
 
-
-
-
-
-
 \definecolor{lightgray}{rgb}{0.6,0.6,0.6}
 \definecolor{darkgray}{rgb}{0.3,0.3,0.3}
 \newcommand{\err}[1]{$^{\textcolor{red}{#1}}$}
@@ -125,6 +120,7 @@ With the above physical equations we can formulate an algorithm for the simulati
 	\State \Return $\gamma \frac{m_j \cdot (\vv{q_j} - \vv{q_i})}{(||\vv{q_j} - \vv{q_i}||^2 + \epsilon^2)^\frac{3}{2}}$
 \EndProcedure
 \end{algorithmic}
+\label{alg:core}
 \end{algorithm}
 
 Because the calculation of the force for each body is independent of previous steps or partial results the nested for-loop can be fully parallelized. The same applies for the second for-loop that updates the positions and velocities.
@@ -164,91 +160,15 @@ With these values we can scale the gravitational constant accordingly \cite{astr
 
 \section{Parallelization}
 \subsection{OpenMP}
-OpenMP (\textit{Open Multi-Processing}) is an application programming interface that enables parallelization through the use of multiple threads that are executed concurrently. OpenMP is a high-level API that lightens the user's workload with a set of simple compiler directives, library routines and environment variables that enable nearly-automatic parallelization. It is especially easy to parallelize even nested for-loops as long as some prerequisites are fulfilled. For example a simple two-dimensional for loop can be parallelized with the pragma \texttt{\#pragma omp parallel for collapse(2) \{...\}}. This leads to the creation of \texttt{OMP\_NUM\_THREADS} threads, each executing an equally large part of this loop. The environmental variable \texttt{OMP\_NUM\_THREADS} can be set to an arbitrary value before executing the code. For all practical purposes the number of threads is limited to the number of (virtual) CPUs on the machine. Setting this number to a higher value than available CPUs will \textbf{not} lead to faster execution times but in fact will slow down the execution. Therefore it is advised to set $1 \leq $ \texttt{OMP\_NUM\_THREADS} $\leq $ \texttt{NUM\_CPUs}.\\
+OpenMP (\textit{Open Multi-Processing}) is an application programming interface that enables parallelization through the use of multiple threads that are executed concurrently. OpenMP is a high-level API that lightens the user's workload with a set of simple compiler directives, library routines and environment variables that enable nearly-automatic parallelization. It is especially easy to parallelize even nested for-loops as long as some prerequisites are fulfilled. For example a simple two-dimensional for loop can be parallelized with the pragma \texttt{\#pragma omp parallel for collapse(2) \{...\}}. This leads to the creation of \texttt{OMP\_NUM\_THREADS} threads, each executing an equally large part of this loop. The environmental variable \texttt{OMP\_NUM\_THREADS} can be set to an arbitrary value before executing the code. For all practical purposes the number of threads is limited to the number of (virtual) CPUs on the machine. Setting this number to a higher value than available CPUs will \textbf{not} lead to faster execution times but in fact will slow down the execution. Therefore it is advised to set $1 \leq $ \texttt{OMP\_NUM\_THREADS} $\leq $ \texttt{NUM\_CPUs}. Listing \ref{lst:openmppar} shows the relevant part of the simulation code that can be parallelized using OpenMP. It follows the basic pattern of the core algorithm described in Algorithm \ref{alg:core} but uses an additional for loop to reset the forces. This is necessary because OpenMP only allows statements in the inner for-loop.\\
 
-\begin{lstlisting}[escapeinside={\X\X}, caption={Part of the code that is parallelized using OpenMP}, label={lst:openmppar}]
-void OmpSimulator::addForces() {
-
-X\textcolor{orange}{\#pragma}X omp parallel for
-    for (int k = 0; k < this->num_bodies; ++k) {
-        this->bodies[k].resetForce();
-    }
-
-X\textcolor{orange}{\#pragma}X omp parallel for collapse(2)
-    for (int i = 0; i < this->num_bodies; i++) {
-        for (int j = 0; j < this->num_bodies; j++) {
-            if (i != j) {
-                this->bodies[i].addForce(this->bodies[j]);
-            }
-        }
-    }
-
-X\textcolor{orange}{\#pragma}X omp parallel for
-    for (int i = 0; i < this->num_bodies; i++) {
-        this->bodies[i].update(UPDATE_STEP);
-    }
-
-}
-\end{lstlisting}
+\lstinputlisting[escapeinside={\X\X}, caption={Part of the code that is parallelized using OpenMP}, label={lst:openmppar}]{omp_extract.cpp}
 
 \subsection{OpenCL}
-The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for parallelization on heterogeneous platforms. It enables the processing power of CPUs and GPUs. OpenCL specifies it's own programming language \texttt{OpenCL C} that is based on \texttt{C99} and \texttt{C++}. The core concept of OpenCL is the use of so called \textit{kernels}, functions that are executed on an OpenCL device. Following the SPMD (single program, multiple data) approach, this function is applied to each \textit{work item} in parallel. When the number of \textit{compute units} (CUs) is smaller than the number of work items, the workload is equally distributed in work \textit{work groups}. The number of work items in a work group is called \textit{local size}, the total number of work items is called \textit{global size} with the property that the global size is equal to the number of work groups times the according local size. By adjusting these parameters the degree of parallelization can be adjusted, similar to setting \texttt{OMP\_NUM\_THREADS} in the OpenMP framework. The main advantage of OpenCL over OpenMP is the possibility to leverage the compute units available on the GPU. Because the GPU has far more compute units than any CPU, it is perfectly suited to achieve a high degree of parallelization.
+The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for parallelization on heterogeneous platforms. It enables the processing power of CPUs and GPUs. OpenCL specifies it's own programming language \texttt{OpenCL C} that is based on \texttt{C99} and \texttt{C++}. The core concept of OpenCL is the use of so called \textit{kernels}, functions that are executed on an OpenCL device. Following the SPMD (single program, multiple data) approach, this function is applied to each \textit{work item} in parallel. When the number of \textit{compute units} (CUs) is smaller than the number of work items, the workload is equally distributed in work \textit{work groups}. The number of work items in a work group is called \textit{local size}, the total number of work items is called \textit{global size} with the property that the global size is equal to the number of work groups times the according local size. By adjusting these parameters the degree of parallelization can be adjusted, similar to setting \texttt{OMP\_NUM\_THREADS} in the OpenMP framework. The main advantage of OpenCL over OpenMP is the possibility to leverage the compute units available on the GPU. Because the GPU has far more compute units than any CPU, it is perfectly suited to achieve a high degree of parallelization. Listing \ref{lst:openclpar} shows the OpenCL kernel code used for the parallelization of the simulation.
+
 \newpage
-\begin{lstlisting}[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]
-
-kernel void nbody_move(global float* masses,
-                       global float* positions,
-                       global float* velocities,
-                       global float* forces,
-                       int NUM_BODIES,
-                       float STEP_SIZE,
-                       int WORK_GROUP_SIZE)
-{
-    const float GRAVITATIONAL_CONSTANT = 39.5f;
-    const float EPS = 10;
-
-    // Calculate forces
-    for(int n = 0; n < WORK_GROUP_SIZE; n++) {
-        int a1d = (get_global_id(0) * WORK_GROUP_SIZE) + n;
-        int a2d = a1d * 2;
-        float a_rx = positions[a2d];
-        float a_ry = positions[a2d+1];
-        float fx = 0.0;
-        float fy = 0.0;
-        for(int i = 0; i < NUM_BODIES; i++) {
-            int b1d = i;
-            int b2d = i * 2;
-            if(b1d != a1d) {
-                float b_rx = positions[b2d];
-                float b_ry = positions[b2d+1];
-                float mass = masses[b1d];
-                float dx = b_rx - a_rx;
-                float dy = b_ry - a_ry;
-                float dist = sqrt(pow(dx,2) + pow(dy,2));
-                float F = (mass / pow(dist*dist + EPS*EPS, 1.5));
-                fx += F * dx;
-                fy += F * dy;
-            }
-        }
-        forces[a2d] = GRAVITATIONAL_CONSTANT * fx;
-        forces[a2d+1] = GRAVITATIONAL_CONSTANT * fy;
-    }
-
-    // Update positions
-    for (int a = 0; a < WORK_GROUP_SIZE; ++a) {
-        int a1d = (get_global_id(0) * WORK_GROUP_SIZE) + a;
-        int a2d = a1d * 2;
-        float fx = forces[a2d];
-        float fy = forces[a2d+1];
-        velocities[a2d] += STEP_SIZE * fx ;
-        velocities[a2d+1] += STEP_SIZE * fy;
-        positions[a2d] += STEP_SIZE * velocities[a2d];
-        positions[a2d+1] += STEP_SIZE * velocities[a2d+1];
-    }
-
-}
-
-\end{lstlisting}
+\lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
 
 \section{Initital configurations}
 TODO: proof of concept with solar system configuration, effect of varying epsilon and gravitational constant, example images
