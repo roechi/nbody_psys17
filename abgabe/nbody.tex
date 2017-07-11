@@ -136,7 +136,7 @@ The application itself supports an extensive command line interface in order to 
 
 \subsection{Software design}
 
-The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation.
+The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation. The class hierarchy is portrayed in \cite{fig:classes} with exclusion of the main class, since it just provides configuration parsing as well instantiation of the seimulator and is not really important in regards to the simulation itself.
 
 \begin{figure}[h!]
 	\centering
@@ -144,6 +144,8 @@ The final application is composed of a relatively small number of classes, since
 	\caption{Architectural overview of the classes involved in the simulation.}
 	\label{fig:classes}
 \end{figure}
+
+Since one requirement was that we try out different parallelization approaches and we did not want to develop two applications with large sets of duplicated code, we tried to instantiate the different simulators dynamically during setup within a single application. The solution offerd itself through the application of the strategy design pattern. In other words, we encapsulated the different parallelization approaches in whithin the seperate simulator classes \texttt{OmpSimulator} and \texttt{OpenClSimulator} respectively. To gain interchangeability, both implementations suffice the abstraction which is defined in form of the class \texttt{Simulator}.
 
 \subsection{Astronomical Units}
 Distances, masses and velocities in the universe lead to large numbers that might not fit in floating
