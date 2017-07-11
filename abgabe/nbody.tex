@@ -147,6 +147,12 @@ The final application is composed of a relatively small number of classes, since
 
 Since one requirement was that we try out different parallelization approaches and we did not want to develop two applications with large sets of duplicated code, we tried to instantiate the different simulators dynamically during setup within a single application. The solution offerd itself through the application of the strategy design pattern. In other words, we encapsulated the different parallelization approaches in whithin the seperate simulator classes \texttt{OmpSimulator} and \texttt{OpenClSimulator} respectively. To gain interchangeability, both implementations suffice the abstraction which is defined in form of the class \texttt{Simulator}.
 
+Since the setup of the simulated physical system was also exterenalized with configuration files, we had to implement a file parsing in a \texttt{Util} class.
+
+The requirement to have a simulation run indefinitely, proved to be challenging, since the application had to support some kind of interrupt, so that objects could be cleaned up properly before shutdown. So we looked up strategies to handle system level termination signals, \texttt{SIGTERM} precisely, and found a solution which we realized in the class \texttt{SignalHandler}. Basically, an instance of \texttt{SignalHandler} checks whether a registered callback received a kill signal during every single iteration of the simulator.
+
+The specific representation of the physical bodies is realized through the aptly named class \texttt{Body}. In this singular case, property naming deviates from clean code naming conventions and is directly adopted from the underlying mathematical nomenclature instead.
+
 \subsection{Astronomical Units}
 Distances, masses and velocities in the universe lead to large numbers that might not fit in floating
 point numbers. Because many OpenCL vendors do not support double precision numbers, we scale these values to astronomical units that will fit in single precision floating points. In astronomical units, time is
