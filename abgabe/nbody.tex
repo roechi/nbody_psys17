@@ -71,15 +71,15 @@ The n-body problem is given by $n$ point masses $m_i > 0$ and $n$ initial positi
 \subsection{Derivation}
 Finding the body positions boils down to calculating the acceleration for each body. Using Newton' second law of motion
 \begin{align*}
-F = m \cdot a 	
+F = m \cdot a
 \end{align*}\\
 we can state that mass times acceleration of the $i$th body is equal to the sum of the forces acting on this particular body. The sum of the forces can be calculated using Newton's universal law of gravity
 \begin{align*}
-F = \gamma \cdot \frac{m_1m_2}{r^2}	
+F = \gamma \cdot \frac{m_1m_2}{r^2}
 \end{align*}\\
 where $\gamma$ is the gravitational constant, and the superposition principle
 \begin{align*}
-\vv{F_{res}} = \vv{F_1} + \vv{F_2} + ... + \vv{F_n}	
+\vv{F_{res}} = \vv{F_1} + \vv{F_2} + ... + \vv{F_n}
 \end{align*}\\
 and the direction of this force defined by
 \begin{align*}
@@ -126,10 +126,18 @@ With the above physical equations we can formulate an algorithm for the simulati
 Because the calculation of the force for each body is independent of previous steps or partial results the nested for-loop can be fully parallelized. The same applies for the second for-loop that updates the positions and velocities.
 
 \section{Implementation}
-The simulation and the core algorithm was implemented in \texttt{C/C++} with OpenMP \cite{openmp} and OpenCL \cite{opencl} as parallelization frameworks. For developing and debugging we used the CLion IDE \cite{clion} on two identical MacBook Pro machines running macOS Sierra.
+The simulation and the core algorithm were implemented in \texttt{C/C++} with OpenMP \cite{openmp} and OpenCL \cite{opencl} as parallelization frameworks. For developing and debugging we used the CLion IDE \cite{clion} on two identical MacBook Pro machines running macOS Sierra. The project build specifications were managed with CMake.
+
+Also we tried out different testing frameworks like cunit, but finally settled with \texttt{Google-Test} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.
+
+We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream.
+
+The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
 
 \subsection{Software design}
-TODO: description
+
+The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation.
+
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{img/classes.png}
