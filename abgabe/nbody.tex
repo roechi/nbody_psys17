@@ -18,6 +18,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{textcomp}
+\usepackage{hyperref}
 
 \definecolor{listinggray}{gray}{0.9}
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
@@ -128,15 +129,15 @@ Because the calculation of the force for each body is independent of previous st
 \section{Implementation}
 The simulation and the core algorithm were implemented in \texttt{C/C++} with OpenMP \cite{openmp} and OpenCL \cite{opencl} as parallelization frameworks. For developing and debugging we used the CLion IDE \cite{clion} on two identical MacBook Pro machines running macOS Sierra. The project build specifications were managed with CMake.
 
-Also we tried out different testing frameworks like cunit, but finally settled with \texttt{Google-Test} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.
+Also we tried out different testing frameworks like cunit, but finally settled with Google-Test \cite{gtest} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.
 
-We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream.
+We also implemented a real time visualization with Processing \cite{processing}, a micro framework for the development of visual applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream.
 
 The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
 
 \subsection{Software design}
 
-The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation. The class hierarchy is portrayed in \cite{fig:classes} with exclusion of the main class, since it just provides configuration parsing as well instantiation of the seimulator and is not really important in regards to the simulation itself.
+The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation. The class hierarchy is portrayed in Figure \ref{fig:classes} with exclusion of the main class, since it just provides configuration parsing as well instantiation of the seimulator and is not really important in regards to the simulation itself.
 
 \begin{figure}[h!]
 	\centering
