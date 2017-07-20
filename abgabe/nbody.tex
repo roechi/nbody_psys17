@@ -18,6 +18,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{textcomp}
+\usepackage{hyperref}
 
 \definecolor{listinggray}{gray}{0.9}
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
@@ -135,7 +136,7 @@ We also implemented a real time visualization with Processing, a micro framework
 The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
 
 \subsection{Software design}
-
+\label{software_design}
 The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation. The class hierarchy is portrayed in \cite{fig:classes} with exclusion of the main class, since it just provides configuration parsing as well instantiation of the seimulator and is not really important in regards to the simulation itself.
 
 \begin{figure}[h!]
@@ -186,14 +187,23 @@ The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for
 \newpage
 \lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
 
-\section{Initital configurations}
-TODO: proof of concept with solar system configuration, effect of varying epsilon and gravitational constant, example images
+\section{Simulation behavior}
+As described in section \ref{software_design}, the initial configuration of the physical system (i.e. masses and body positions) are read from configuration files. This allows us to rapidly simulate and evaluate different scenarios without the need to build the software again. It is hard to tell whether the physical properties are simulated correctly, for example it is simply not feasible to calculate the forces by hand and using these values to write unit tests to verify the simulation. Therefore we created initial values for the simulation of the solar system with its 8 planets. The sun is set as the reference point at coordinates $\vv{p}=(0,0)$ with velocity $\vv{v}=(0,0)$. The $y$-position and horizontal velocity of all other planets are set to 0. Masses are set according to their real values. For the vertical velocity we used the \textit{mean orbital speed} as given by \cite{wikiplanets}. This setup results in a fairly stable orbital movement of the planets around the sun. We used this configuration as a proof-of-concept for each new simulation version.\\\\
+More interesting configurations arised when the number of bodies increased. However, most of the randomly chosen configurations "exploded" after collapsing rapidly into the center of the system. Structures like clusters or stable orbital systems could only be observed by "zooming" into the regions of interest while replaying the simulation. Increasing the \textit{softening factor} $\epsilon$ prevents these "explosions" from happening because it is guaranteed that the bodies always have a certain distance which leads to \textit{softened} accelerations. It is important to note that increasing the softening factor yields \textit{unrealistic} behavior. However this does not have to be a bad thing because the simulation could also be used to generate visually appealing image sequences or general-purpose particle systems where realism is less important. Example renderings from the simulation with 2048 bodies are given in figure \ref{fig:simulation_rendering}.
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\textwidth]{img/out.png}
+  \caption{Simulation with 2048 bodies initially randomly placed in space with equal masses, no initial velocity and softening factor $\epsilon = 1$. Images taken after 40 and 175 simulation steps (1 simulation step equals 1 day).}
+  \label{fig:simulation_rendering}
+\end{figure}
 
 \section{Benchmarks}
 TODO: include all benchmarks, test on different machine!, don't forget sequential execution
 
 \section{Discussion}
 
+\newpage
 \bibliography{bibliography}{}
 \bibliographystyle{plainurl}
 \end{document}
