@@ -210,14 +210,31 @@ More interesting configurations arised when the number of bodies increased. Howe
 \end{figure}
 
 \section{Benchmarks}
-\begin{figure}[tb]
+\subsection{Sequential vs. OpenMP vs. OpenCL}
+In order to compare the three implementation types \textit{Sequential}, \textit{OpenMP} and \textit{OpenCL} we performed benchmark tests with a fixed number of simulation steps and varying number of bodies. Since the sequential part of the program is always the same in each of the different implementations, the overall execution time is a good indicator for the efficiency of the parallelization. Execution environment was a MacBook Pro with 2,7 GHz Intel Core i5 processor with 4 hyperthreaded cores and Intel Iris Graphics 6100 with a total number of 48 compute units. Based on the number of cores and compute units, the speedup $S$ was predicted to be $S=4$ for the OpenMP implementation and $S=48$ for the OpenCL implementation with the sequential implementation as a reference point.\\
+
+\renewcommand{\arraystretch}{1.3}
+\begin{table}[h!]
+  \begin{tabular}{l|rrrr}
+    & Execution Time (s) & Standard Deviation &  Actual Speedup & Predicted Speedup \\ \hline
+    Sequential & $19342.50$ & $57.87$ & - & -\\
+    OpenMP & $6557.75$ & $31.30$ & $2.95$ & $4$\\
+    OpenCL & $983.63$ & $23.75$ & $19.67$ & $48$
+  \end{tabular}  
+  \caption{Speedup comparison: actual and predicted speedup differ significantly.}
+  \label{table:speedup}
+\end{table}
+
+Table \ref{table:speedup} and figure \ref{fig:benchmark_compare} reveal that the maximum speedup of $S\approx 20$ was reached with the OpenCL implementation. However, predicted and actual speedup times differ significantly. This can be due to different background processes simultaneously running on the machine that take up computing resources. Another possible explanation is the overhead that arises from copying the required memory back and forth to the GPU or the general overhead from splitting the global task into subtasks.
+\begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{img/benchmark_compare.png}
   \caption{Comparison of the simulation speeds of the different implementation types \textit{Sequential}, \textit{OpenMP} and \textit{OpenCL}. Standard deviation over 8 runs is displayed but barely visible.}
   \label{fig:benchmark_compare}
 \end{figure}
 
-\begin{figure}[tb]
+\subsection{OpenMP threads}
+\begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{img/benchmark_omp.png}
   \caption{Simulation speed of OpenMP implementation for various number of threads. Standard deviation over 8 runs is displayed.}
