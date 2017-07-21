@@ -184,6 +184,17 @@ OpenMP (\textit{Open Multi-Processing}) is an application programming interface 
 \subsection{OpenCL}
 The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for parallelization on heterogeneous platforms. It enables the processing power of CPUs and GPUs. OpenCL specifies it's own programming language \texttt{OpenCL C} that is based on \texttt{C99} and \texttt{C++}. The core concept of OpenCL is the use of so called \textit{kernels}, functions that are executed on an OpenCL device. Following the SPMD (single program, multiple data) approach, this function is applied to each \textit{work item} in parallel. When the number of \textit{compute units} (CUs) is smaller than the number of work items, the workload is equally distributed in work \textit{work groups}. The number of work items in a work group is called \textit{local size}, the total number of work items is called \textit{global size} with the property that the global size is equal to the number of work groups times the according local size. By adjusting these parameters the degree of parallelization can be adjusted, similar to setting \texttt{OMP\_NUM\_THREADS} in the OpenMP framework. The main advantage of OpenCL over OpenMP is the possibility to leverage the compute units available on the GPU. Because the GPU has far more compute units than any CPU, it is perfectly suited to achieve a high degree of parallelization. Listing \ref{lst:openclpar} shows the OpenCL kernel code used for the parallelization of the simulation.
 
+\subsection{Sequential and parallel parts}
+When analyzing parallelized software it is important to know which parts of the software can be parallelized and which parts are inevitable sequential. Following Amdahl's Law, the maximum theoretical speedup is limited by the sequential part of the program. Our simulation consists mainly of three parts:
+
+\begin{itemize}
+  \item Parsing of the configuration file
+  \item Core algorithm
+  \item Processing the results (Writing to log file)
+\end{itemize}
+
+Out of these parts, only the core algorithm can be fully parallelized.
+
 \newpage
 \lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
 
@@ -199,7 +210,19 @@ More interesting configurations arised when the number of bodies increased. Howe
 \end{figure}
 
 \section{Benchmarks}
-TODO: include all benchmarks, test on different machine!, don't forget sequential execution
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\textwidth]{img/benchmark_compare.png}
+  \caption{Comparison of the simulation speeds of the different implementation types \textit{Sequential}, \textit{OpenMP} and \textit{OpenCL}. Standard deviation over 8 runs is displayed but barely visible.}
+  \label{fig:benchmark_compare}
+\end{figure}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\textwidth]{img/benchmark_omp.png}
+  \caption{Simulation speed of OpenMP implementation for various number of threads. Standard deviation over 8 runs is displayed.}
+  \label{fig:figure1}
+\end{figure}
 
 \section{Discussion}
 
