@@ -175,6 +175,9 @@ With these values we can scale the gravitational constant accordingly \cite{astr
 	& = 39.445 \frac{AU^3}{M \cdot yr^2}
 \end{align*}
 
+\subsection{valgrind/helgrind}
+TODO: check with valgrind and helgrind
+
 \section{Parallelization}
 \subsection{OpenMP}
 OpenMP (\textit{Open Multi-Processing}) is an application programming interface that enables parallelization through the use of multiple threads that are executed concurrently. OpenMP is a high-level API that lightens the user's workload with a set of simple compiler directives, library routines and environment variables that enable nearly-automatic parallelization. It is especially easy to parallelize even nested for-loops as long as some prerequisites are fulfilled. For example a simple two-dimensional for loop can be parallelized with the pragma \texttt{\#pragma omp parallel for collapse(2) \{...\}}. This leads to the creation of \texttt{OMP\_NUM\_THREADS} threads, each executing an equally large part of this loop. The environmental variable \texttt{OMP\_NUM\_THREADS} can be set to an arbitrary value before executing the code. For all practical purposes the number of threads is limited to the number of (virtual) CPUs on the machine. Setting this number to a higher value than available CPUs will \textbf{not} lead to faster execution times but in fact will slow down the execution. Therefore it is advised to set $1 \leq $ \texttt{OMP\_NUM\_THREADS} $\leq $ \texttt{NUM\_CPUs}. Listing \ref{lst:openmppar} shows the relevant part of the simulation code that can be parallelized using OpenMP. It follows the basic pattern of the core algorithm described in Algorithm \ref{alg:core} but uses an additional for loop to reset the forces. This is necessary because OpenMP only allows statements in the inner for-loop.\\
@@ -225,7 +228,8 @@ In order to compare the three implementation types \textit{Sequential}, \textit{
   \label{table:speedup}
 \end{table}
 
-Table \ref{table:speedup} and figure \ref{fig:benchmark_compare} reveal that the maximum speedup of $S\approx 20$ was reached with the OpenCL implementation. However, predicted and actual speedup times differ significantly. This can be due to different background processes simultaneously running on the machine that take up computing resources. Another possible explanation is the overhead that arises from copying the required memory back and forth to the GPU or the general overhead from splitting the global task into subtasks.
+Table \ref{table:speedup} and figure \ref{fig:benchmark_compare} reveal that the maximum speedup of $S\approx 20$ was reached with the OpenCL implementation. However, predicted and actual speedup times differ significantly. This can be due to different background processes simultaneously running on the machine that take up computing resources. Another possible explanation is the overhead that arises from copying the required memory back and forth to the GPU or the general overhead from splitting the global task into subtasks. Because the standard deviation over 8 runs is very small for each implementation we can assume that our implementation is quite stable and does not show unexpected behavior
+
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{img/benchmark_compare.png}
@@ -234,11 +238,13 @@ Table \ref{table:speedup} and figure \ref{fig:benchmark_compare} reveal that the
 \end{figure}
 
 \subsection{OpenMP threads}
+When parallelizing with OpenMP one can adjust the number of threads. However, simply increasing this number does not necessarily yield better results. In theory best performance can be observered when the number of OpenMP threads is equal to the number of (virtual) CPU cores. In order to empirically verify this, we performed runtime benchmarks with increasing number of OpenMP CPUs on a machine with 4 virtual cores. The results are displayed in figure \ref{fig:benchmark_openmp}. The results confirm that the best performance can be achieved with 4 OpenMP threads which is equal to the number of virtual cores on the machine. For larger number of OpenMP cores performance decreases and the variation increases.
+
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{img/benchmark_omp.png}
   \caption{Simulation speed of OpenMP implementation for various number of threads. Standard deviation over 8 runs is displayed.}
-  \label{fig:figure1}
+  \label{fig:benchmark_openmp}
 \end{figure}
 
 \section{Discussion}
