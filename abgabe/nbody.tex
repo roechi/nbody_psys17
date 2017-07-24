@@ -238,13 +238,20 @@ Table \ref{table:speedup} and figure \ref{fig:benchmark_compare} reveal that the
 \end{figure}
 
 \subsection{OpenMP threads}
-When parallelizing with OpenMP one can adjust the number of threads. However, simply increasing this number does not necessarily yield better results. In theory best performance can be observered when the number of OpenMP threads is equal to the number of (virtual) CPU cores. In order to empirically verify this, we performed runtime benchmarks with increasing number of OpenMP CPUs on a machine with 4 virtual cores. The results are displayed in figure \ref{fig:benchmark_openmp}. The results confirm that the best performance can be achieved with 4 OpenMP threads which is equal to the number of virtual cores on the machine. For larger number of OpenMP cores performance decreases and the variation increases.
+When parallelizing with OpenMP one can adjust the number of threads. However, simply increasing this number does not necessarily yield better results. In theory best performance can be observered when the number of OpenMP threads is equal to the number of (virtual) CPU cores. In order to empirically verify this, we performed runtime benchmarks with increasing number of OpenMP CPUs on a machine with 4 virtual cores and on an AWS EC2 machine of type t2.2xlarge with 8 virtual cores. The results are displayed in figure \ref{fig:benchmark_openmp} and figure \ref{fig:benchmark_openmp_8}. The results confirm that the best performance can be achieved with the corresponding number of OpenMP threads which is equal to the number of virtual cores on the machine. For larger number of OpenMP cores performance decreases. The large variation in figure \ref{fig:benchmark_openmp} can be explained because the tests were performed on a private machine with various other background processes running. Of course there is some variation on the AWS machine as well but it is so small that it is not even visible in the plot. That is because it was a clean Ubuntu Server 16.04. install with as little process overhead as possible.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{img/benchmark_omp.png}
   \caption{Simulation speed of OpenMP implementation for various number of threads. Standard deviation over 8 runs is displayed.}
   \label{fig:benchmark_openmp}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{img/benchmark_omp_8_cores.png}
+  \caption{Simulation speed of OpenMP implementation for various number of threads on a machine with 8 virtual cores. Standard deviation over 8 runs is displayed but barely visible.}
+  \label{fig:benchmark_openmp_8}
 \end{figure}
 
 \section{Discussion}
