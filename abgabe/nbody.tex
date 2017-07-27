@@ -131,7 +131,14 @@ The simulation and the core algorithm were implemented in \texttt{C/C++} with Op
 
 Also we tried out different testing frameworks like cunit, but finally settled with \texttt{Google-Test} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.
 
-We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream.
+We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream. A screenshot of the visualization application is given in figure \ref{fig:vis_app}.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{img/visualization.png}
+  \caption{Screenshot of the visualization application.}
+  \label{fig:vis_app}
+\end{figure}
 
 The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
 
