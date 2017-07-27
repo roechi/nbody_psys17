@@ -1,47 +1,27 @@
-import java.util.Properties;
-import java.io.Reader;
-import com.hamoid.*;
-
-VideoExport videoExport;
-boolean recording = false;
-
-String readInputFilePath() {
-  return args[0];
-}
-
 BufferedReader reader;
 String line;
-int steps = 0; 
-String path = "";
-
-float scale = 0.15;
-float shiftVertical = 0.0;
+int steps = 0;
+float scale = 0.1;
 float shiftHorizontal = 0.0;
-float bodySize = 5;
-color bodyColor = color(0,255,0,128);
+float shiftVertical = 0.0;
+int userFrameRate = 60;
+boolean autoScale = false;
+float verticalDim = 0.0;
+float horizontalDim = 0.0;
 
 void setup() {
-  
-  //path = readInputFilePath();
-  path = "/Users/jaszkowic/Desktop/positions.txt";
-  //path = "../resources/crazy_universe.txt";
-   //Open the file from the createWriter() example
-  reader = createReader(path);
-  
   size(1000,700);
-  strokeWeight(1);
-  stroke(255, 100);
+  background(0);  
   smooth();
-  background(0);
-  frameRate(60);
-  
-    videoExport = new VideoExport(this);
-  videoExport.setFrameRate(60);  
+  frameRate(userFrameRate);
+  reader = createReader(args[0]);
 }
 
 void draw() {
+  clear();
   background(0);
-   try {       
+  
+  try {
     line = reader.readLine();
   } catch (IOException e) {
     e.printStackTrace();
@@ -49,75 +29,119 @@ void draw() {
   }
   
   if (line == null) {
-    // Stop reading because of an error or file is empty
-    delay(10000);
-    noLoop();  
+    fill(255,255,255);
+    stroke(255,255,255);
+    strokeWeight(1);
+    textSize(25);
+    textAlign(CENTER,CENTER);
+    text("Stream is empty.", width/2, height/2);
+    //noLoop();  
   } else {
-    // Parse Bodies
     String[] pieces = split(line, TAB);
-    
-    // Render status
     int numBodies = pieces.length / 3;
-    if(numBodies > 64) {
-        bodySize = 2;
-        bodyColor = color(0,255,0,128);
-    } else {
-        bodySize = 5;
-        bodyColor = color(255,255,255);
-    }
     int year = steps / 365;
     int day = steps % 365;
-    stroke(255,255,255);
     fill(255,255,255);
-    text("Year: " + year + " Day: " + day + "\nSimulation Speed: " + round(frameRate) + " days/sec\nBodies: " + numBodies + "\nRecording: " + recording, 10, 20);
+    stroke(255,255,255);
+    textSize(12);
+    textAlign(LEFT,LEFT);
     
-    // Render bodies
-    for(int i = 0; i < numBodies; i++) {
-      float x = float(pieces[3*i+0]) * scale * (width /2) + (width/2) + shiftHorizontal;
-      float y = float(pieces[3*i+1]) * scale * (height/2) + (height/2) + shiftVertical;
-      fill(bodyColor);
-      stroke(bodyColor);
-      strokeWeight(bodySize);
-      point(x,y);    
+    if(autoScale) {
+      text("Year: " + year + " Day: " + day +
+     "\nSimulation Speed: " + round(frameRate) + " days/sec" + 
+     "\nBodies: " + numBodies +
+     "\nAuto-Scale: " + (autoScale ? "On" : "Off") +
+     "\nDimension: " + nf(horizontalDim,2,1) + " x "  + nf(verticalDim,2,1)+ " AU", 10, 20);
+      
+      text("Interface:" +
+     "\n[Toggle Auto-Scale] 'A'",width-200,20);
+    } else {
+      
+      text("Year: " + year + " Day: " + day +
+     "\nSimulation Speed: " + round(frameRate) + " days/sec" + 
+     "\nBodies: " + numBodies +
+     "\nAuto-Scale: " + (autoScale ? "On" : "Off"), 10, 20);
+         
+      text("Interface:" +
+     "\n[Toggle Auto-Scale] 'A'" +
+     "\n[Offset] '← → ↑ ↓'" +
+     "\n[Scale] '+ -'" +
+     "\n[Reset Offset/Scale] 'C'",width-200,20); 
     }
+
     
+    float superScale = 0.0;
+    float min_x = MAX_FLOAT;
+    float max_x = MIN_FLOAT;
+    float min_y = MAX_FLOAT;
+    float max_y = MIN_FLOAT;
+    for(int i = 0; i < numBodies; i++) {
+      float x = Float.valueOf(pieces[3*i+0]);
+      float y = Float.valueOf(pieces[3*i+1]);
+      if(x < min_x) {
+        min_x = x;
+      }
+      if(x > max_x) {
+        max_x = x;
+      }
+      if(y < min_y) {
+        min_y = y;        
+      }
+      if(y > max_y) {
+        max_y = y;
+      }
+    }
+    superScale = max(max_x - min_x, max_y - min_y);
+    verticalDim = max_y - min_y;
+    horizontalDim = max_x - min_x;
+    
+    for(int i = 0; i < numBodies; i++) {
+      float x = 0.0;
+      float y = 0.0;
+      if(autoScale) {
+        x = width/2 + (Float.valueOf(pieces[3*i+0]) / superScale) * width;
+        y = height/2 + (Float.valueOf(pieces[3*i+1]) / superScale) * height;  
+      } else {
+        x = float(pieces[3*i+0]) * scale * (width /2) + (width/2) + shiftHorizontal;
+        y = float(pieces[3*i+1]) * scale * (height/2) + (height/2) + shiftVertical;
+      }
+      
+
+      fill(0,255,0,128);
+      stroke(0,255,0,128);
+      strokeWeight(2);
+      point(x,y);
+    }
   }
-  
-  // Record to file
-  if(recording) {
-   videoExport.saveFrame(); 
-  }
-  
   steps++;
 }
 
+
 void keyPressed() {
- if (key == CODED){
-   if (keyCode == UP){
-     shiftVertical -= 10;
-   } else if (keyCode == DOWN) {
-     shiftVertical += 10;
-   } else if (keyCode == LEFT) {
-     shiftHorizontal += 10;
-   } else if (keyCode == RIGHT) {
-     shiftHorizontal -= 10;
+   if (!autoScale && key == CODED){
+     if (keyCode == UP){
+       shiftVertical += 10;
+     } else if (keyCode == DOWN) {
+       shiftVertical -= 10;
+     } else if (keyCode == LEFT) {
+       shiftHorizontal += 10;
+     } else if (keyCode == RIGHT) {
+       shiftHorizontal -= 10;
+     }
+   } else if (!autoScale) {
+     if (key == '+'){
+       scale *= 1.1;
+     } else if (key == '-') {
+       scale *= 0.9;
+     } else if (key == 'c') {
+       shiftHorizontal = 0;
+       shiftVertical = 0;
+       scale = 0.15;
+     }
    }
- } else {
-   if (key == '+'){
-     scale *= 1.1;
-   } else if (key == '-') {
-     scale *= 0.9;
-   } else if (key == 'c') {
-     shiftHorizontal = 0;
-     shiftVertical = 0;
-     scale = 0.15;
-   } else if (key == 'q') {
-     recording = false;
-      videoExport.endMovie();
-   } else if (key == 's') {
-      // Start exporting after adjusting the settings.
-      recording = true;
-      videoExport.startMovie();
-   }
- }
+ 
+  if(key == 'a') {
+    autoScale = !autoScale; 
+  }
+  
 }
