@@ -191,12 +191,31 @@ The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for
 When analyzing parallelized software it is important to know which parts of the software can be parallelized and which parts are inevitable sequential. Following Amdahl's Law, the maximum theoretical speedup is limited by the sequential part of the program. Our simulation consists mainly of three parts:
 
 \begin{itemize}
-  \item Parsing of the configuration file
-  \item Core algorithm
-  \item Processing the results (Writing to log file)
+  \item $P_1$: Parsing of the configuration file
+  \item $P_2$: Core algorithm (i.e. the simulation)
+  \item $P_3$: Processing the results (Writing to log file)
 \end{itemize}
 
-Out of these parts, only the core algorithm can be fully parallelized.
+Out of these parts, only the core algorithm part $P_2$ can be fully parallelized. Ahmdal's law gives a formula for the theoretical speedup, where $p < 1$ is the portion of the program that can be parallelized and $s > 1$ is the degree of parallelization:
+\begin{align*}
+ S(p,s) = \frac{1}{1-p+\frac{p}{s}}
+\end{align*}
+In order to analyze the simulation with this formula, we have to know $p$. Let $t_1$ be the runtime of the whole simulation ($P_1 + P_2 + P_3$) and $t_2$ be the runtime of the simulation without the actual simulation, i.e. the sequential parts ($P_1 + P_3$). We define $p = (t_1 - t_2) / t_1$. Benchmark tests revealed that $p$ is independent of the number of simulation steps but depends on the number of bodies to be processed. For large number of bodies $n$ the sequential portion of the program becomes negligibly small, this is because in every simulation step only $4 * 3 * n$ Bytes have to be written to disk. Even for $n=2^{20} \approx 1$ million bodies this yields to 12MB of data per simulation step which is "nothing" compared to the execution time of the algorithm. Figure \ref{fig:seq_par} shows the parallelizable and sequential parts for varying number of bodies and fixed simulation steps. Figure \ref{fig:speedup} shows the theoretical speedup based on Ahmdal's law for varying number of bodies and processors. Even with a unrealistic large number of processors the speedup will never be higher than $\approx$ 200 for $n=2048$ bodies. However, with high number of bodies the parallel portion of the program becomes nearly 1 and therefore the theoretical speedup will grow significantly which means that the program can benefit more from high parallelization.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{img/par_seq.png}
+  \caption{Proportion of execution time for parallel and sequential part of the program.}
+  \label{fig:seq_par}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{img/speedup.png}
+  \caption{Theoretical speedup based on Ahmdal's law for varying number of bodies and number of processors.}
+  \label{fig:speedup}
+\end{figure}
+
 
 \newpage
 \lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
