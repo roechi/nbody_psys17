@@ -7,7 +7,7 @@ kernel void nbody_move(global float* masses,
                        int WORK_GROUP_SIZE)
 {
     const float GRAVITATIONAL_CONSTANT = 39.5f;
-    const float EPS = 0.1;
+    const float EPS = 5.0f;
 
     // Calculate forces
     for(int n = 0; n < WORK_GROUP_SIZE; n++) {
