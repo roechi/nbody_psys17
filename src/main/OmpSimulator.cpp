@@ -112,7 +112,7 @@ void OmpSimulator::addForces() {
     for (int i = 0; i < this->num_bodies; i++) {
         for (int j = 0; j < this->num_bodies; j++) {
             if (i != j) {
-                this->bodies[i].addForce(this->bodies[j]);
+                this->bodies[i].addForce(this->bodies[j], Simulator::GRAVITATIONAL_CONSTANT, 0.1f);
             }
         }
     }

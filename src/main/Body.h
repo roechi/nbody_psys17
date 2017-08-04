@@ -27,8 +27,7 @@ public:
 	void update(double step);
 	double distanceTo(Body b);
 	void resetForce();
-	void addForce(Body b);
-	void addForceAlternative(Body b);
+	void addForce(Body b, float scalingFactor, float softeningFactor);
 	void print();
 };
 

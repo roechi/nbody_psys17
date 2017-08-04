@@ -55,13 +55,13 @@ void Body::resetForce() {
 	this->fy = 0.0;
 }
 
-void Body::addForce(Body b) {
+void Body::addForce(Body b, float scalingFactor, float softeningFactor) {
 
-    double EPS = 0;      // softening parameter (just to avoid infinities)
+    double EPS = softeningFactor;      // softening parameter (just to avoid infinities)
     double dx = b.rx - this->rx;
     double dy = b.ry - this->ry;
     double dist = distanceTo(b);
-    double F = (Simulator::GRAVITATIONAL_CONSTANT * b.m) / pow(dist*dist + EPS*EPS, 1.5);
+    double F = (scalingFactor * b.m) / pow(dist*dist + EPS*EPS, 1.5);
     this->fx += F * dx;
     this->fy += F * dy;
 }
