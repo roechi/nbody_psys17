@@ -31,8 +31,6 @@ protected:
     Body* bodies;
 
 private:
-
-
     void runStep();
 };
 

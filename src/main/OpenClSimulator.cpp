@@ -50,7 +50,7 @@ void OpenClSimulator::scaleBodies() {
 }
 
 int OpenClSimulator::startSimulation(int simulation_steps) {
-    assert(this->num_bodies % work_group_size == 0);
+//    assert(this->num_bodies % work_group_size == 0);
 
     //get all platforms (drivers)
     std::vector<cl::Platform> all_platforms;
@@ -144,10 +144,10 @@ int OpenClSimulator::startSimulation(int simulation_steps) {
 void OpenClSimulator::runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_positions,
                               cl::Buffer &buffer_velocities, cl::CommandQueue &queue,
                               cl::Kernel &kernel_add) {
-    uint global_size = (uint)this->num_bodies / this->work_group_size;
+  //  uint global_size = (uint)this->num_bodies / this->work_group_size;
 //    fprintf(stderr, "global_size=%i\n",global_size);
 //    fprintf(stderr, "local_size=%i\n",work_group_size);
-    queue.enqueueNDRangeKernel(kernel_add, cl::NullRange, cl::NDRange(global_size), cl::NDRange(work_group_size));
+    queue.enqueueNDRangeKernel(kernel_add, cl::NullRange, cl::NDRange(this->num_bodies), cl::NullRange);
     queue.finish();
 
     queue.enqueueReadBuffer(buffer_masses, CL_TRUE, 0, sizeof(float) * this->num_bodies, masses);
@@ -176,4 +176,3 @@ void OpenClSimulator::runStep(cl::Buffer &buffer_masses, cl::Buffer &buffer_posi
 void OpenClSimulator::setWorkGroupSize(uint work_group_size) {
     this->work_group_size = work_group_size;
 }
-

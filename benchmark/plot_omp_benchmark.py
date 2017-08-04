@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
 import sys
 import numpy
@@ -39,10 +39,11 @@ max_threads = len(num_omp_threads)
 
 ax = plot.subplot()
 ax.set_xlim(num_omp_threads[0], num_omp_threads[max_threads - 1])
-line1 = ax.errorbar(num_omp_threads, omp_runtimes, yerr=omp_stdevs, label = 'OMP')
-plot.xlabel('number of OMP threads')
-plot.ylabel('simulation speed (ms)')
-plot.title('OpenMP simulation speed with {} bodies and {} steps for {} runs'.format(num_bodies, simulation_steps, repeats))
+line1 = ax.errorbar(num_omp_threads, omp_runtimes, yerr=omp_stdevs, label = 'OpenMP')
+ax.legend(loc='upper right')
+plot.xlabel('Number of OpenMP threads')
+plot.ylabel('Simulation speed (ms)')
+plot.title('OpenMP simulation speed on a CPU with 8 cores')
 
 # Render, Control + C in command line to close the window
 plot.draw()

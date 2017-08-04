@@ -21,11 +21,26 @@ int main(int argc, char **argv) {
             int simulation_steps = atoi(argv[2]);
             std::string simulator_selector = std::string(argv[3]);
 
-            if (argc == 5) {
+            if (argc == 4) {
+              if (simulator_selector.compare("ocl") == 0) {
+                 simulator = new OpenClSimulator(input_file_path);
+                  fprintf(stderr,
+                          "Starting simulation from file %s with %d simulation steps. Running with OpenCl. Writing to console...\n",
+                          input_file_path.c_str(), simulation_steps);
+              } else if (simulator_selector.compare("omp") == 0) {
+                 simulator = new OmpSimulator(input_file_path);
+                  fprintf(stderr,
+                          "Starting simulation from file %s with %d simulation steps. Running with OpenMP. Writing to console...\n",
+                          input_file_path.c_str(), simulation_steps);
+              } else {
+                  throw std::runtime_error(std::string("Unknown simulator type ") + simulator_selector);
+              }
+              simulator->startSimulation(simulation_steps);
+            } else if (argc == 5) {
                 std::string output_file_path = std::string(argv[4]);
 
                 if (simulator_selector.compare("ocl") == 0) {
-                    simulator = new OpenClSimulator(input_file_path, output_file_path);
+                   simulator = new OpenClSimulator(input_file_path, output_file_path);
                     fprintf(stderr,
                             "Starting simulation from file %s with %d simulation steps. Running with OpenCL. Writing to file %s\n",
                             input_file_path.c_str(), simulation_steps, output_file_path.c_str());
@@ -43,26 +58,11 @@ int main(int argc, char **argv) {
                 std::string output_file_path = std::string(argv[4]);
                 int work_groups = atoi(argv[5]);
                 if (simulator_selector.compare("ocl") == 0) {
-                    simulator = new OpenClSimulator(input_file_path, output_file_path);
-                    ((OpenClSimulator*)simulator)->setWorkGroupSize(work_groups);
+                   simulator = new OpenClSimulator(input_file_path, output_file_path);
+                   ((OpenClSimulator*)simulator)->setWorkGroupSize(work_groups);
                     fprintf(stderr,
                             "Starting simulation from file %s with %d simulation steps and work_group_size %d. Running with OpenCL. Writing to file %s\n",
                             input_file_path.c_str(), simulation_steps, work_groups, output_file_path.c_str());
-                }
-                simulator->startSimulation(simulation_steps);
-            } else {
-                if (simulator_selector.compare("ocl") == 0) {
-                    simulator = new OpenClSimulator(input_file_path);
-                    fprintf(stderr,
-                            "Starting simulation from file %s with %d simulation steps. Running with OpenCl. Writing to console...\n",
-                            input_file_path.c_str(), simulation_steps);
-                } else if (simulator_selector.compare("omp") == 0) {
-                    simulator = new OmpSimulator(input_file_path);
-                    fprintf(stderr,
-                            "Starting simulation from file %s with %d simulation steps. Running with OpenMP. Writing to console...\n",
-                            input_file_path.c_str(), simulation_steps);
-                } else {
-                    throw std::runtime_error(std::string("Unknown simulator ") + simulator_selector);
                 }
                 simulator->startSimulation(simulation_steps);
             }
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     } catch (std::exception &e) {
         fprintf(stderr, e.what());
         fprintf(stderr,
-                "Provide IN_FILE, SIMULATION_STEPS, SIMULATOR_SELECTOR (and optionally OUT_FILE) as arguments!\n"
+                "Provide IN_FILE, SIMULATION_STEPS, SIMULATOR_SELECTOR, [OUT_FILE], [WORK_GROUP_SIZE]) as arguments!\n"
                         "\t- select -1 simulation steps to run indefinitely\n"
                         "\t- possible simulator selectors are: omp, ocl");
         result = EXIT_FAILURE;

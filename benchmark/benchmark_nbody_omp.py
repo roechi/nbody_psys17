@@ -1,20 +1,37 @@
 #!/usr/bin/python
 import os
 import time
+import sys
 
 current_millies_time = lambda: int(round(time.time() * 1000))
 
+if (len(sys.argv) != 4):
+    print "Missing arguments.\nUsage: {} [num_bodies] [simulation_steps] [repeats]".format(sys.argv[0])
+    sys.exit()
+
+num_bodies = int(sys.argv[1])
+simulation_steps = int(sys.argv[2])
+num_repeats = int(sys.argv[3])
+
 path_to_body_generation = "../resources/generateRandomGalaxy.py"
 path_to_simulation_exe = "../cmake-build-debug/nbody_psys17"
+path_to_plot_exe = "./plot_omp_benchmark.py"
+
+if not os.path.isfile(path_to_body_generation):
+    print "{} does not exist!".format(path_to_body_generation);
+    sys.exit();
+
+if not os.path.isfile(path_to_simulation_exe):
+    print "{} does not exist!".format(path_to_simulation_exe);
+    sys.exit();
+
+if not os.path.isfile(path_to_plot_exe):
+    print "{} does not exist!".format(path_to_plot_exe);
+    sys.exit();
 
 tmp_file = "tmp_omp.txt"
 out_file = "tmp_omp_out.txt"
 log_file = "benchmark_nbody_{}.log".format(current_millies_time())
-
-num_bodies = 100
-simulation_steps = 1000
-num_threads = 4
-num_repeats = 8
 
 results_file = open(log_file, 'w')
 results_file.write('{}\n{}\n{}\n'.format(num_bodies,simulation_steps,num_repeats))
@@ -57,4 +74,4 @@ os.remove(tmp_file)
 os.remove(out_file)
 print 'All cleaned up.\n'
 
-os.system('./plot_omp_benchmark.py {}'.format(log_file))
+os.system('{} {}'.format(path_to_plot_exe, log_file))

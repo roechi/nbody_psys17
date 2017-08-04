@@ -8,7 +8,7 @@ if [[ -n "$file" && -n "$iterations" && -n "$simulator" ]]; then
 	mkfifo nbody-pipe
 	../cmake-build-debug/nbody_psys17 "$file" "$iterations" "$simulator" > nbody-pipe &
 	echo 'Starting Visualisation...'
-	./nbody_visualization_cli nbody-pipe
+	./realtime_visualization nbody-pipe
 	echo 'Exiting and cleaning up...'
 	rm nbody-pipe
 	echo 'Done.'
