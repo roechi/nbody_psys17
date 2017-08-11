@@ -71,3 +71,7 @@ void Body::print() {
 	fprintf(stderr,"Mass: %f, Position: (%f,%f), Velocity: (%f,%f)\n", this->m, this->rx, this->ry, this->vx, this->vy);
 }
 
+Body::~Body() {
+
+}
+

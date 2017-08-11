@@ -31,6 +31,8 @@ int OmpSimulator::startSimulation(int simulation_steps) {
         this->output_file.close();
     }
 
+    delete[](this->bodies);
+
     return exit_status;
 }
 
@@ -40,6 +42,7 @@ void OmpSimulator::generateBodies() {
     this->num_bodies = numberOfLines;
     this->bodies = new Body[this->num_bodies];
     std::list<Body> parsedBodies = parser->parseFile(this->input_file_path);
+    delete parser;
 
     int k = 0;
     for (Body b : parsedBodies) {

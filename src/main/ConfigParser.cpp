@@ -42,7 +42,9 @@ std::list<Body> ConfigParser::parseFile(std::string file_path)
 Body ConfigParser::parseLine(std::string line)
 {
     float* values = parseLineRaw(line);
-    return Body(values[0], values[1], values[2], values[3], values[4]);
+    const Body &body = Body(values[0], values[1], values[2], values[3], values[4]);
+    delete[](values);
+    return body;
 }
 
 
@@ -112,4 +114,10 @@ int ConfigParser::getNumberOfLines(std::string file_path) {
 
     std::list<std::string> lines = read_file(ifs);
     return (int) lines.size();
+}
+
+ConfigParser::ConfigParser() {}
+
+ConfigParser::~ConfigParser() {
+
 }

@@ -14,11 +14,13 @@ class ConfigParser {
 
 public:
 
+    ConfigParser();
+
     /**
-     * Parses the given config file at path file_path into a list of Body
-     * @param file_path The path to the config file
-     * @return A list of Body, according to the contents in the config file
-     */
+         * Parses the given config file at path file_path into a list of Body
+         * @param file_path The path to the config file
+         * @return A list of Body, according to the contents in the config file
+         */
     std::list<Body> parseFile(std::string file_path);
 
 
@@ -39,6 +41,8 @@ public:
 
     Body parseLine(std::string line);
     std::list<std::string> read_file(std::istream& istream);
+
+    virtual ~ConfigParser();
 };
 
 

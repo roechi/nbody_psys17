@@ -29,6 +29,8 @@ public:
 	void resetForce();
 	void addForce(Body b, float scalingFactor, float softeningFactor);
 	void print();
+
+	virtual ~Body();
 };
 
 #endif /* SRC_BODY_H_ */
