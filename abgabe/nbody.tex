@@ -54,16 +54,16 @@ morekeywords={pragma},
 %Header und Titel
 \title{N-Body Simulation}
 \subtitle{VL Parallele Systeme, HTW Berlin, SS2017}
-\author{Richard Remus, Jonas Jaszkowic}
-\date{}
+\author{Jonas Jaszkowic, Richard Remus}
+\date{\today}
 
 %----------------------------------------------------------------------
 \begin{document}
 \maketitle
-% \tableofcontents
+\tableofcontents
 
 \section{Introduction}
-Implementing a N-body simulation breaks down to solving the N-body problem of predicting the individual motions of a group of $n$ objects interacting with each other gravitationally. The exact solution to this problem has a time complexity of $\mathcal{O}(n^2)$ which means that it is not possible to solve it efficiently in an appropriate period of time, especially when the number of objects is large. Reducing time complexity can either be done by using approximate methods which produce a "good enough" solution or by parallelizing the algorithm on multi-core processors. For this work, we focus on the latter.
+Implementing a N-body simulation breaks down to solving the N-body problem of predicting the individual motions of a group of $n$ objects interacting with each other gravitationally. The exact solution to this problem has a time complexity of $\mathcal{O}(n^2)$ which means that it is not possible to solve it efficiently in an appropriate period of time, especially when the number of objects is large. Reducing time complexity can either be done by using approximate methods which produce a solution that is \emph{good enough} or by parallelizing the algorithm on multi-core processors. For this work, we focus on the latter.
 
 \section{N-body problem}
 The N-body problem is a generalized form of the famous two-body and three-body problem which are dealing with the same question: determining the motions of two or three bodies interacting with each other gravitationally. An explicit analytical solution is known to the two-body problem, i.e. simple functions $\vv{r_1}(t)$ and $\vv{r_2}(t)$ that takes only the time $t$ as a parameter and calculates the corresponding position of both bodies given only the initial conditions. However, up to today no analytical solution in the form of $\vv{r_i}(t)$ functions has been found for the three-body problem or the n-body problem. \cite{nbodysolve} The most straight-forward methods are called \textit{direct} methods or \textit{particle-particle} methods. For these problems, a number of numerical solutions are known.
@@ -182,8 +182,18 @@ With these values we can scale the gravitational constant accordingly \cite{astr
 	& = 39.445 \frac{AU^3}{M \cdot yr^2}
 \end{align*}
 
-\subsection{valgrind/helgrind}
-TODO: check with valgrind and helgrind
+\subsection{Evaluating with valgrind and helgrind}
+
+In order to find memory leaks and thread scheduling issues, we made huse of the valgrind tool. As can be expected with a considerably small amount of custom code, valgrind was not able to detect many issues that originiated in our own making.
+Nevertheless, it detected two memory leaks, which were caused by missing \emph{destroy} statements. These are displayed in the log extracts Listing \ref{lst:val_log_omp_sim} and \ref{lst:val_log_parse_line}.
+Fixing these issues was no problem and it showed us also, that we had forgotten some destructors.
+
+\lstinputlisting[caption={Missing destroy statement whithin OmpSimulator class}, label={lst:val_log_omp_sim}]{val_extract_1.txt}
+\lstinputlisting[caption={Missing destroy statement whithin ConfigParser class}, label={lst:val_log_parse_line}]{val_extract_2.txt}
+
+Valgrind actually criticised many more lines, but these were buried whithin the used frameworks and therefore out of our reach.
+
+Helgrind, on the other hand, was not able to detect any threading issues, which seems reasonable since all thread handling is done by the respective frameworks we used.
 
 \section{Parallelization}
 \subsection{OpenMP}

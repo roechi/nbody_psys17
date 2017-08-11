@@ -1,0 +1,7 @@
+==17260== Thread 1:
+==17260== 1 bytes in 1 blocks are definitely lost in loss record 1 of 363
+==17260==    at 0x1000DE616: malloc (in /usr/local/Cellar/valgrind/3.13.0/lib/valgrind/vgpreload_memcheck-amd64-darwin.so)
+==17260==    by 0x1001612D7: operator new(unsigned long) (in /usr/local/Cellar/gcc/6.3.0_1/lib/gcc/6/libstdc++.6.dylib)
+==17260==    by 0x10000426F: OmpSimulator::initializeBodies() (OmpSimulator.cpp:24)
+==17260==    by 0x10000416F: OmpSimulator::OmpSimulator(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (OmpSimulator.cpp:15)
+==17260==    by 0x10000363A: main (main.cpp:48)
