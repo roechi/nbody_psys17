@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 
-set(CMAKE_CXX_COMPILER /usr/bin/g++-6)
-
 if(UNIX AND NOT APPLE)
+    set(CMAKE_CXX_COMPILER /usr/bin/g++-6)
     set(CMAKE_CXX_FLAGS "-IOpenCL -std=c++11 -fopenmp -ggdb")
 else()
+    set(CMAKE_CXX_COMPILER /usr/local/bin/g++-6)
     set(CMAKE_CXX_FLAGS "-framework OpenCL -std=c++11 -fopenmp -ggdb")
 endif()
 
