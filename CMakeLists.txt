@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(nbody_psys17)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-6)
 
-# Warning: It is required to set CXX environment variable to g++-6 compiler
-if(NOT (CMAKE_CXX_COMPILER MATCHES "g\\++-6"))
-  message(FATAL_ERROR "Make sure that CXX environment variable is set to g++-6 \
-  compiler! Currently CMake uses '${CMAKE_CXX_COMPILER}'. Set CXX environment \
-  variable, clear CMake caches and try again.")
+if(UNIX AND NOT APPLE)
+    set(CMAKE_CXX_FLAGS "-IOpenCL -std=c++11 -fopenmp -ggdb")
+else()
+    set(CMAKE_CXX_FLAGS "-framework OpenCL -std=c++11 -fopenmp -ggdb")
 endif()
 
-set(CMAKE_CXX_FLAGS "-framework OpenCL -std=c++11 -fopenmp -ggdb")
-set(CMAKE_EXE_LINKER_FLAGS "-Wall -I. -lm")
+set(CMAKE_EXE_LINKER_FLAGS " -Wall -I. -lm")
 set(CMAKE_CXX_STANDARD 11)
 
-find_package( OpenCL REQUIRED )
+project(nbody_psys17)
 
-include_directories(includes ${OPENCL_INCLUDE_DIR})
+add_subdirectory(src/test)
+
+find_package(OpenCL REQUIRED)
 
 set(SOURCE_FILES
         src/main/Body.cpp
@@ -33,9 +33,9 @@ set(SOURCE_FILES
         src/main/SignalHandler.cpp
         src/main/SignalHandler.h
         src/main/Mode.cpp
-        src/main/Mode.h)
+        src/main/Mode.h
+        )
 
-add_subdirectory(src/test)
-
+include_directories(includes)
 add_executable(nbody_psys17 ${SOURCE_FILES})
-target_link_libraries(nbody_psys17 ${OPENCL_LIBRARIES})
+target_link_libraries(nbody_psys17 ${OpenCL_LIBRARIES})

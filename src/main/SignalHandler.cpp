@@ -4,7 +4,7 @@
 
 #include <signal.h>
 
-#include "signalHandler.h"
+#include "SignalHandler.h"
 
 bool SignalHandler::mbGotExitSignal = false;
 
