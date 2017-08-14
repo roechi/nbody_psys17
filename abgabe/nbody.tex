@@ -68,13 +68,13 @@ Implementing a N-body simulation breaks down to solving the N-body problem of pr
 \section{N-body problem}
 The N-body problem is a generalized form of the famous two-body and three-body problem which are dealing with the same question: determining the motions of two or three bodies interacting with each other gravitationally. An explicit analytical solution is known to the two-body problem, i.e. simple functions $\vv{r_1}(t)$ and $\vv{r_2}(t)$ that takes only the time $t$ as a parameter and calculates the corresponding position of both bodies given only the initial conditions. However, up to today no analytical solution in the form of $\vv{r_i}(t)$ functions has been found for the three-body problem or the n-body problem. \cite{nbodysolve} The most straight-forward methods are called \textit{direct} methods or \textit{particle-particle} methods. For these problems, a number of numerical solutions are known.
 \subsection{Definition}
-The n-body problem is given by $n$ point masses $m_i > 0$ and $n$ initial position vectors $\vv{r_i}$ for $i=1,2,...,n$ in a three-dimensional reference system $\mathbb{R}^3$, their mutual gravitational attraction being the single force acting on them. \cite{meyer2008introduction}Given these initial conditions, the task can now be stated as: \textit{Find the position vectors for each body given a time $t$.}
+The n-body problem is given by $n$ point masses $m_i > 0$ and $n$ initial position vectors $\vv{r_i}$ for $i=1,2,...,n$ in a three-dimensional reference system $\mathbb{R}^3$. The mutual gravitational attraction should be the only force acting on them. \cite{meyer2008introduction} Given these initial conditions, the task can now be stated as: \textit{Find the position vectors for each body at time $t$.}
 \subsection{Derivation}
 Finding the body positions boils down to calculating the acceleration for each body. Using Newton' second law of motion
 \begin{align*}
 F = m \cdot a
 \end{align*}\\
-we can state that mass times acceleration of the $i$th body is equal to the sum of the forces acting on this particular body. The sum of the forces can be calculated using Newton's universal law of gravity
+we can state that mass times acceleration of the $i$-th body is equal to the sum of the forces acting on this particular body. The sum of the forces can be calculated using Newton's universal law of gravity
 \begin{align*}
 F = \gamma \cdot \frac{m_1m_2}{r^2}
 \end{align*}\\
@@ -84,7 +84,7 @@ where $\gamma$ is the gravitational constant, and the superposition principle
 \end{align*}\\
 and the direction of this force defined by
 \begin{align*}
-\vv{q_j} -\vv{q_i}~/~||\vv{q_j} - \vv{q_i}||
+\vv{q_j} -\vv{q_i}~/~||\vv{q_j} - \vv{q_i}||.
 \end{align*}
 With these basic laws we can derive the acceleration $a_i$ for every body:
 \begin{align*}
@@ -98,10 +98,10 @@ In order to avoid division by zero in the distance calculation $||\vv{q_j} - \vv
 \begin{align*}
 	\vv{a_i} &= \gamma \sum\limits_{j=1}^N \frac{m_j \cdot (\vv{q_j} - \vv{q_i})}{(||\vv{q_j} - \vv{q_i}||^2 + \epsilon^2)^\frac{3}{2}}
 \end{align*}
-With this equation we have deducted the acceleration $\vv{a_i}$ of each body. Using infinitesimal time steps and the laws $v = a\cdot t$ and $s=v\cdot t$, we can iteratively calculate the postion of each body for every time $t$.
+With this equation we have deducted the acceleration $\vv{a_i}$ of each body. Using infinitesimal time steps and the laws $v = a\cdot t$ and $s=v\cdot t$, we can iteratively calculate the postion of each body for any time $t$.
 
 \section{Algorithm}
-With the above physical equations we can formulate an algorithm for the simulation of the body positions over time given an initial configuration. This algorithm uses the \textit{direct} method and features no further optimizations beside the parallelization that is applied later on. The core algorithm consists of a nested for loop that iterates for each body $i$ over all other bodies $j$ in order to accumulate the forces acting on body $i$. It is important to note that we have to accumulate all forces \textit{before} the calculation of velocity and position can accur, otherwise the update of the position would lead to incorrect results.
+With the above physical equations we can formulate an algorithm for the simulation of the body positions over time given an initial configuration. This algorithm uses the \textit{direct} method and features no further optimizations beside the parallelization that is applied later on. The core algorithm consists of a nested for loop that iterates for each body $i$ over all other bodies $j \neq i$ in order to accumulate the forces acting on body $i$. It is important to note that we have to accumulate all forces \textit{before} the calculation of velocity and position can accur, otherwise the update of the position would lead to incorrect results. Furthermore, we do not include the force of a body acting on itself.
 \begin{algorithm}[H]
 \caption{Update body positions for the given timestep $\Delta$}
 \begin{algorithmic}[1]
@@ -127,11 +127,9 @@ With the above physical equations we can formulate an algorithm for the simulati
 Because the calculation of the force for each body is independent of previous steps or partial results the nested for-loop can be fully parallelized. The same applies for the second for-loop that updates the positions and velocities.
 
 \section{Implementation}
-The simulation and the core algorithm were implemented in \texttt{C/C++} with OpenMP \cite{openmp} and OpenCL \cite{opencl} as parallelization frameworks. For developing and debugging we used the CLion IDE \cite{clion} on two identical MacBook Pro machines running macOS Sierra. The project build specifications were managed with CMake.
-
-Also we tried out different testing frameworks like cunit, but finally settled with Google-Test \cite{gtest} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.
-
-We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream. A screenshot of the visualization application is given in figure \ref{fig:vis_app}.
+The simulation and the core algorithm were implemented in \texttt{C/C++} with OpenMP \cite{openmp} and OpenCL \cite{opencl} as the parallelization frameworks. For developing and debugging we used the CLion IDE \cite{clion} on two identical MacBook Pro machines running macOS Sierra. The project build specifications were managed with CMake.\\\\
+We tried out different testing frameworks like cunit \cite{cunit}, but finally settled with Google-Test \cite{gtest} since it was easy to set up, updates itself on build time and has integration with the CLion IDE, which enabled us to run specific tests or test suites on demand.\\\\
+We also implemented a real time visualization with Processing, a micro framework for the development of graphical applications based on the usage of a \textit{setup-and-loop} pattern. The visualization supports both a replay from a log file and realtime processing of a log stream. A screenshot of the visualization application is given in figure \ref{fig:vis_app}. The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
 
 \begin{figure}[h!]
   \centering
@@ -140,31 +138,22 @@ We also implemented a real time visualization with Processing, a micro framework
   \label{fig:vis_app}
 \end{figure}
 
-The application itself supports an extensive command line interface in order to specify precise configuration of the simulator.
-
 \subsection{Software design}
 \label{software_design}
 The final application is composed of a relatively small number of classes, since its only purpose is the simulation while the visualization of the simulation data was completely externalized. Nevertheless, we tried to apply fitting design patterns in order to accomplish a clean, sensible and maintainable implementation. The class hierarchy is portrayed in figure \ref{fig:classes} with exclusion of the main class, since it just provides configuration parsing as well instantiation of the simulator and is not really important in regards to the simulation itself.
-
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{img/classes.png}
 	\caption{Architectural overview of the classes involved in the simulation.}
 	\label{fig:classes}
 \end{figure}
-
-Since one requirement was that we try out different parallelization approaches and we did not want to develop two applications with large sets of duplicated code, we tried to instantiate the different simulators dynamically during setup within a single application. The solution offerd itself through the application of the strategy design pattern. In other words, we encapsulated the different parallelization approaches in whithin the seperate simulator classes \texttt{OmpSimulator} and \texttt{OpenClSimulator} respectively. To gain interchangeability, both implementations suffice the abstraction which is defined in form of the class \texttt{Simulator}.
-
-Since the setup of the simulated physical system was also exterenalized with configuration files, we had to implement a file parsing in a \texttt{Util} class.
-
-The requirement to have a simulation run indefinitely, proved to be challenging, since the application had to support some kind of interrupt, so that objects could be cleaned up properly before shutdown. So we looked up strategies to handle system level termination signals, \texttt{SIGTERM} precisely, and found a solution which we realized in the class \texttt{SignalHandler}. Basically, an instance of \texttt{SignalHandler} checks whether a registered callback received a kill signal during every single iteration of the simulator.
-
+Since one requirement was that we try out different parallelization approaches and we did not want to develop two applications with large sets of duplicated code, we tried to instantiate the different simulators dynamically during setup within a single application. The solution offerd itself through the application of the strategy design pattern. In other words, we encapsulated the different parallelization approaches in whithin the seperate simulator classes \texttt{OmpSimulator} and \texttt{OpenClSimulator} respectively. To gain interchangeability, both implementations suffice the abstraction which is defined in form of the class \texttt{Simulator}.\\\\
+Since the setup of the simulated physical system was also exterenalized with configuration files, we had to implement a file parsing in a \texttt{Util} class.\\\\
+The requirement to have a simulation run indefinitely, proved to be challenging, since the application had to support some kind of interrupt, so that objects could be cleaned up properly before shutdown. So we looked up strategies to handle system level termination signals, \texttt{SIGTERM} precisely, and found a solution which we realized in the class \texttt{SignalHandler}. Basically, an instance of \texttt{SignalHandler} checks whether a registered callback received a kill signal during every single iteration of the simulator.\\\\
 The specific representation of the physical bodies is realized through the aptly named class \texttt{Body}. In this singular case, property naming deviates from clean code naming conventions and is directly adopted from the underlying mathematical nomenclature instead.
 
 \subsection{Astronomical Units}
-Distances, masses and velocities in the universe lead to large numbers that might not fit in floating
-point numbers. Because many OpenCL vendors do not support double precision numbers, we scale these values to astronomical units that will fit in single precision floating points. In astronomical units, time is
-measured in years, distances in AU and masses in solar-masses:
+Distances, masses and velocities in the universe lead to large numbers that might not fit in floating point numbers. Because many OpenCL vendors do not support double precision numbers, we scale these values to astronomical units that will fit in single precision floating points. In astronomical units, time is measured in years, distances in AU and masses in solar-masses:
 
 \begin{align*}
 	1~yr &= 365.25 * 86400~s = 31557600~s \\
@@ -183,17 +172,12 @@ With these values we can scale the gravitational constant accordingly \cite{astr
 \end{align*}
 
 \subsection{Evaluating with valgrind and helgrind}
-
-In order to find memory leaks and thread scheduling issues, we made huse of the valgrind tool. As can be expected with a considerably small amount of custom code, valgrind was not able to detect many issues that originiated in our own making.
-Nevertheless, it detected two memory leaks, which were caused by missing \emph{destroy} statements. These are displayed in the log extracts Listing \ref{lst:val_log_omp_sim} and \ref{lst:val_log_parse_line}.
-Fixing these issues was no problem and it showed us also, that we had forgotten some destructors.
-
+In order to find memory leaks and thread scheduling issues, we made use of the valgrind tool \cite{valgrind}. As can be expected with a considerably small amount of custom code, valgrind was not able to detect many issues that originated in our own making. Nevertheless, it detected two memory leaks, which were caused by missing \emph{destroy} statements. These are displayed in the log extracts Listing \ref{lst:val_log_omp_sim} and \ref{lst:val_log_parse_line}.
+Fixing these issues was no problem and it showed us, that we had forgotten some destructors.
 \lstinputlisting[caption={Missing destroy statement whithin OmpSimulator class}, label={lst:val_log_omp_sim}]{val_extract_1.txt}
 \lstinputlisting[caption={Missing destroy statement whithin ConfigParser class}, label={lst:val_log_parse_line}]{val_extract_2.txt}
 
-Valgrind actually criticised many more lines, but these were buried whithin the used frameworks and therefore out of our reach.
-
-Helgrind, on the other hand, was not able to detect any threading issues, which seems reasonable since all thread handling is done by the respective frameworks we used.
+Valgrind actually criticised many more lines, but these were buried whithin the used frameworks and therefore out of our reach. Helgrind (a \textit{valgrind} tool) on the other hand, was not able to detect any threading issues, which seems reasonable since all thread handling is done by the respective frameworks we used.
 
 \section{Parallelization}
 \subsection{OpenMP}
@@ -203,6 +187,9 @@ OpenMP (\textit{Open Multi-Processing}) is an application programming interface 
 
 \subsection{OpenCL}
 The \textit{Open Computing Language} (OpenCL) is a general-purpose framework for parallelization on heterogeneous platforms. It enables the processing power of CPUs and GPUs. OpenCL specifies it's own programming language \texttt{OpenCL C} that is based on \texttt{C99} and \texttt{C++}. The core concept of OpenCL is the use of so called \textit{kernels}, functions that are executed on an OpenCL device. Following the SPMD (single program, multiple data) approach, this function is applied to each \textit{work item} in parallel. When the number of \textit{compute units} (CUs) is smaller than the number of work items, the workload is equally distributed in work \textit{work groups}. The number of work items in a work group is called \textit{local size}, the total number of work items is called \textit{global size} with the property that the global size is equal to the number of work groups times the according local size. By adjusting these parameters the degree of parallelization can be adjusted, similar to setting \texttt{OMP\_NUM\_THREADS} in the OpenMP framework. The main advantage of OpenCL over OpenMP is the possibility to leverage the compute units available on the GPU. Because the GPU has far more compute units than any CPU, it is perfectly suited to achieve a high degree of parallelization. Listing \ref{lst:openclpar} shows the OpenCL kernel code used for the parallelization of the simulation.
+\newpage
+\lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
+
 
 \subsection{Sequential and parallel parts}
 When analyzing parallelized software it is important to know which parts of the software can be parallelized and which parts are inevitable sequential. Following Amdahl's Law, the maximum theoretical speedup is limited by the sequential part of the program. Our simulation consists mainly of three parts:
@@ -232,10 +219,6 @@ In order to analyze the simulation with this formula, we have to know $p$. Let $
   \caption{Theoretical speedup based on Ahmdal's law for varying number of bodies and number of processors.}
   \label{fig:speedup}
 \end{figure}
-
-
-\newpage
-\lstinputlisting[escapeinside={\X\X}, caption={Kernel code for the OpenCL parallelization}, label={lst:openclpar}]{../kernel/core.cl}
 
 \section{Simulation behavior}
 As described in section \ref{software_design}, the initial configuration of the physical system (i.e. masses and body positions) are read from configuration files. This allows us to rapidly simulate and evaluate different scenarios without the need to build the software again. It is hard to tell whether the physical properties are simulated correctly, for example it is simply not feasible to calculate the forces by hand and using these values to write unit tests to verify the simulation. Therefore we created initial values for the simulation of the solar system with its 8 planets. The sun is set as the reference point at coordinates $\vv{p}=(0,0)$ with velocity $\vv{v}=(0,0)$. The $y$-position and horizontal velocity of all other planets are set to 0. Masses are set according to their real values. For the vertical velocity we used the \textit{mean orbital speed} as given by \cite{wikiplanets}. This setup results in a fairly stable orbital movement of the planets around the sun. We used this configuration as a proof-of-concept for each new simulation version.\\\\
