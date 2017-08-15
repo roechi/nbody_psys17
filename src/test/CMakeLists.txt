@@ -19,7 +19,7 @@ download_project(
 add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
 set(test_SRCS
-        gtest.cpp example_test.cpp example_test.h ConfigParser_test.cpp ConfigParser_test.h Body_test.cpp Body_test.h)
+        gtest.cpp ConfigParser_test.cpp ConfigParser_test.h Body_test.cpp Body_test.h)
 set(main_SRCS
         ../main/Body.cpp ../main/ConfigParser.cpp ../main/Body.cpp Body_test.cpp Body_test.h)
 add_executable(runUnitTests gtest.cpp ${test_SRCS} ${main_SRCS})
