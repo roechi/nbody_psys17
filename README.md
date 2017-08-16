@@ -29,8 +29,10 @@ For example, you can run the app like this:
 The application provides hints on how to use its CLI, just give it a try.
  
 You will have to give a configuration file containing the start positions of the bodies, two of those can be found in the resources folder:
+
 - `solar_system.txt` contains start configuration for our solar system
 - `random_galaxy.txt` contains a random configuration
+
 You can also create new random configurations using the provided python script.
 
 ## Visualizations
@@ -38,4 +40,4 @@ You can also create new random configurations using the provided python script.
 We provided two visualizations with Processing in the directories `realtime_visualization` and `replay_visualization` respectively. 
 
 You might also want to take a look at the bash scripts in these directories to run the visualization more comfortable.
-For the realtime visualization you might will have to update the script with the path to the executable (default is cmake-build-debug in project root).
+For the realtime visualization you might want to update the script with the path to the executable (default is `cmake-build-debug/nbody_psys17` in project root).
