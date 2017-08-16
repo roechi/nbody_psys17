@@ -1,4 +1,3 @@
-
 BufferedReader reader;
 String line;
 int steps = 0;
@@ -6,7 +5,7 @@ float scale = 0.1;
 float shiftHorizontal = 0.0;
 float shiftVertical = 0.0;
 int userFrameRate = 60;
-boolean autoScale = true;
+boolean autoScale = false;
 float verticalDim = 0.0;
 float horizontalDim = 0.0;
 
@@ -35,7 +34,7 @@ void draw() {
     strokeWeight(1);
     textSize(25);
     textAlign(CENTER,CENTER);
-    text("Press 'R' to restart.", width/2, height/2);
+    text("Stream is empty.", width/2, height/2);
     //noLoop();  
   } else {
     String[] pieces = split(line, TAB);
@@ -55,8 +54,7 @@ void draw() {
      "\nDimension: " + nf(horizontalDim,2,1) + " x "  + nf(verticalDim,2,1)+ " AU", 10, 20);
       
       text("Interface:" +
-     "\n[Toggle Auto-Scale] 'A'" +
-     "\n[Replay] 'R' ",width-200,20);
+     "\n[Toggle Auto-Scale] 'A'",width-200,20);
     } else {
       
       text("Year: " + year + " Day: " + day +
@@ -66,7 +64,6 @@ void draw() {
          
       text("Interface:" +
      "\n[Toggle Auto-Scale] 'A'" +
-     "\n[Replay] 'R' " + 
      "\n[Offset] '← → ↑ ↓'" +
      "\n[Scale] '+ -'" +
      "\n[Reset Offset/Scale] 'C'",width-200,20); 
@@ -147,9 +144,4 @@ void keyPressed() {
     autoScale = !autoScale; 
   }
   
-  if(key == 'r') {
-     steps = 0;
-     reader = createReader(args[0]);
-     loop();
-  }
 }

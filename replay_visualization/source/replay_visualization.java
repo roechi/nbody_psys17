@@ -1,24 +1,40 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class replay_visualization extends PApplet {
+
 
 BufferedReader reader;
 String line;
 int steps = 0;
-float scale = 0.1;
-float shiftHorizontal = 0.0;
-float shiftVertical = 0.0;
+float scale = 0.1f;
+float shiftHorizontal = 0.0f;
+float shiftVertical = 0.0f;
 int userFrameRate = 60;
 boolean autoScale = true;
-float verticalDim = 0.0;
-float horizontalDim = 0.0;
+float verticalDim = 0.0f;
+float horizontalDim = 0.0f;
 
-void setup() {
-  size(1000,700);
+public void setup() {
+  
   background(0);  
-  smooth();
+  
   frameRate(userFrameRate);
   reader = createReader(args[0]);
 }
 
-void draw() {
+public void draw() {
   clear();
   background(0);
   
@@ -67,13 +83,13 @@ void draw() {
       text("Interface:" +
      "\n[Toggle Auto-Scale] 'A'" +
      "\n[Replay] 'R' " + 
-     "\n[Offset] '← → ↑ ↓'" +
+     "\n[Offset] '\u2190 \u2192 \u2191 \u2193'" +
      "\n[Scale] '+ -'" +
      "\n[Reset Offset/Scale] 'C'",width-200,20); 
     }
 
     
-    float superScale = 0.0;
+    float superScale = 0.0f;
     float min_x = MAX_FLOAT;
     float max_x = MIN_FLOAT;
     float min_y = MAX_FLOAT;
@@ -99,14 +115,14 @@ void draw() {
     horizontalDim = max_x - min_x;
     
     for(int i = 0; i < numBodies; i++) {
-      float x = 0.0;
-      float y = 0.0;
+      float x = 0.0f;
+      float y = 0.0f;
       if(autoScale) {
         x = width/2 + (Float.valueOf(pieces[3*i+0]) / superScale) * width;
         y = height/2 + (Float.valueOf(pieces[3*i+1]) / superScale) * height;  
       } else {
-        x = float(pieces[3*i+0]) * scale * (width /2) + (width/2) + shiftHorizontal;
-        y = float(pieces[3*i+1]) * scale * (height/2) + (height/2) + shiftVertical;
+        x = PApplet.parseFloat(pieces[3*i+0]) * scale * (width /2) + (width/2) + shiftHorizontal;
+        y = PApplet.parseFloat(pieces[3*i+1]) * scale * (height/2) + (height/2) + shiftVertical;
       }
       
 
@@ -120,7 +136,7 @@ void draw() {
 }
 
 
-void keyPressed() {
+public void keyPressed() {
    if (!autoScale && key == CODED){
      if (keyCode == UP){
        shiftVertical += 10;
@@ -133,13 +149,13 @@ void keyPressed() {
      }
    } else if (!autoScale) {
      if (key == '+'){
-       scale *= 1.1;
+       scale *= 1.1f;
      } else if (key == '-') {
-       scale *= 0.9;
+       scale *= 0.9f;
      } else if (key == 'c') {
        shiftHorizontal = 0;
        shiftVertical = 0;
-       scale = 0.15;
+       scale = 0.15f;
      }
    }
  
@@ -151,5 +167,15 @@ void keyPressed() {
      steps = 0;
      reader = createReader(args[0]);
      loop();
+  }
+}
+  public void settings() {  size(1000,700);  smooth(); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "replay_visualization" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
   }
 }
