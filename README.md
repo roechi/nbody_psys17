@@ -38,3 +38,4 @@ You can also create new random configurations using the provided python script.
 We provided two visualizations with Processing in the directories `realtime_visualization` and `replay_visualization` respectively. 
 
 You might also want to take a look at the bash scripts in these directories to run the visualization more comfortable.
+For the realtime visualization you might will have to update the script with the path to the executable (default is cmake-build-debug in project root).
